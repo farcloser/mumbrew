@@ -1,0 +1,40 @@
+#!/bin/bash
+
+TERM_APP=/Applications/Terminal.app
+BASEDIR=$(dirname "$0")
+BREW_EXEC=$BASEDIR/../../../../bin/brew
+TERMINAL_NOTIFIER=$($BREW_EXEC --repository)/bin/terminal-notifier
+NOTIF_ARGS="-sender com.apple.Terminal"
+
+$BREW_EXEC update 2>&1 > /dev/null
+outdated=`$BREW_EXEC outdated --quiet | sed -e 's/.*\///'`
+pinned=`$BREW_EXEC list --pinned`
+
+# Remove pinned formulae from the list of outdated formulae
+outdated=`comm -1 -3 <(echo "$pinned") <(echo "$outdated")`
+
+if [ -z "$outdated" ] ; then
+    if [ -e $TERMINAL_NOTIFIER ]; then
+        # No updates available
+        $TERMINAL_NOTIFIER $NOTIF_ARGS \
+            -title "Everything ok" \
+            -message "No updates available."
+    fi
+else
+    if [ -e $TERMINAL_NOTIFIER ]; then
+        lc=$((`echo "$outdated" | wc -l`))
+        outdated=`echo "$outdated" | tail -$lc`
+        message=`echo "$outdated" | head -5`
+        if [ "$outdated" != "$message" ]; then
+            message="... including:
+$message"
+        else
+            message="$message"
+        fi
+        # Send to the Nofication Center
+        $TERMINAL_NOTIFIER $NOTIF_ARGS \
+            -title "Updating things" -message "$message"
+    fi
+    $BREW_EXEC upgrade 2>&1 | $logger -t mumbrew.upgrade
+    $BREW_EXEC cleanup 2>&1 | $logger -t mumbrew.cleanup
+fi
