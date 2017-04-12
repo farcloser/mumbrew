@@ -35,6 +35,6 @@ $message"
         $TERMINAL_NOTIFIER $NOTIF_ARGS \
             -title "Updating things" -message "$message"
     fi
-    $BREW_EXEC upgrade 2>&1 | $logger -t mumbrew.upgrade
-    $BREW_EXEC cleanup 2>&1 | $logger -t mumbrew.cleanup
+    $BREW_EXEC upgrade 2>&1 | /usr/bin/logger -t mumbrew.upgrade
+    $BREW_EXEC cleanup 2>&1 | /usr/bin/logger -t mumbrew.cleanup
 fi
