@@ -5,6 +5,7 @@ BASEDIR=$(dirname "$0")
 BREW_EXEC=$BASEDIR/../../../../bin/brew
 TERMINAL_NOTIFIER=$($BREW_EXEC --repository)/bin/terminal-notifier
 NOTIF_ARGS="-sender com.apple.Terminal"
+NOTIF_ARGS="-appIcon https://brew.sh/img/homebrew-256x256.png"
 
 $BREW_EXEC update 2>&1 > /dev/null
 outdated=`$BREW_EXEC outdated --quiet | sed -e 's/.*\///'`
@@ -16,9 +17,10 @@ outdated=`comm -1 -3 <(echo "$pinned") <(echo "$outdated")`
 if [ -z "$outdated" ] ; then
     if [ -e $TERMINAL_NOTIFIER ]; then
         # No updates available
-        $TERMINAL_NOTIFIER $NOTIF_ARGS \
-            -title "Everything ok" \
-            -message "No updates available."
+        echo "Everything ok, no updates available"
+        # $TERMINAL_NOTIFIER $NOTIF_ARGS \
+        #    -title "Everything ok" \
+        #    -message "No updates available."
     fi
 else
     if [ -e $TERMINAL_NOTIFIER ]; then
@@ -33,7 +35,7 @@ $message"
         fi
         # Send to the Nofication Center
         $TERMINAL_NOTIFIER $NOTIF_ARGS \
-            -title "Updating things" -message "$message"
+            -title "Updating brews" -message "$message"
     fi
     $BREW_EXEC upgrade 2>&1 | /usr/bin/logger -t mumbrew.upgrade
     $BREW_EXEC cleanup 2>&1 | /usr/bin/logger -t mumbrew.cleanup
