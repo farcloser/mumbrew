@@ -14,6 +14,10 @@ pinned=`$BREW_EXEC list --pinned`
 # Remove pinned formulae from the list of outdated formulae
 outdated=`comm -1 -3 <(echo "$pinned") <(echo "$outdated")`
 
+echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
+date
+echo "Starting mumbrew..."
+
 if [ -z "$outdated" ] ; then
     if [ -e $TERMINAL_NOTIFIER ]; then
         # No updates available
@@ -37,6 +41,10 @@ $message"
         $TERMINAL_NOTIFIER $NOTIF_ARGS \
             -title "Updating brews" -message "$message"
     fi
-    $BREW_EXEC upgrade 2>&1 | /usr/bin/logger -t mumbrew.upgrade
-    $BREW_EXEC cleanup 2>&1 | /usr/bin/logger -t mumbrew.cleanup
+    $BREW_EXEC upgrade
+    # 2>&1 | /usr/bin/logger -t mumbrew.upgrade
+    $BREW_EXEC cleanup
+    # 2>&1 | /usr/bin/logger -t mumbrew.cleanup
 fi
+
+echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
