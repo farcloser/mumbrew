@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 TERM_APP=/Applications/Terminal.app
 BASEDIR=$(dirname "$0")
@@ -8,11 +8,11 @@ NOTIF_ARGS="-sender com.apple.Terminal"
 NOTIF_ARGS="-appIcon https://brew.sh/img/homebrew-256x256.png"
 
 $BREW_EXEC update 2>&1 > /dev/null
-outdated=`$BREW_EXEC outdated --quiet | sed -e 's/.*\///'`
-pinned=`$BREW_EXEC list --pinned`
+outdated=$($BREW_EXEC outdated --quiet | sed -e 's/.*\///')
+pinned=$($BREW_EXEC list --pinned)
 
 # Remove pinned formulae from the list of outdated formulae
-outdated=`comm -1 -3 <(echo "$pinned") <(echo "$outdated")`
+outdated=$(comm -1 -3 <(echo "$pinned") <(echo "$outdated"))
 
 echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
 date
