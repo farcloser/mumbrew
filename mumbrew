@@ -19,32 +19,31 @@ date
 echo "Starting mumbrew..."
 
 if [ -z "$outdated" ] ; then
-    if [ -e $TERMINAL_NOTIFIER ]; then
-        # No updates available
-        echo "Everything ok, no updates available"
-        # $TERMINAL_NOTIFIER $NOTIF_ARGS \
-        #    -title "Everything ok" \
-        #    -message "No updates available."
-    fi
+  if [ -e $TERMINAL_NOTIFIER ]; then
+    # No updates available
+    echo "Everything ok, no updates available"
+    # $TERMINAL_NOTIFIER $NOTIF_ARGS \
+    #    -title "Everything ok" \
+    #    -message "No updates available."
+  fi
 else
-    if [ -e $TERMINAL_NOTIFIER ]; then
-        lc=$((`echo "$outdated" | wc -l`))
-        outdated=`echo "$outdated" | tail -$lc`
-        message=`echo "$outdated" | head -5`
-        if [ "$outdated" != "$message" ]; then
-            message="... including:
-$message"
-        else
-            message="$message"
-        fi
-        # Send to the Nofication Center
-        $TERMINAL_NOTIFIER $NOTIF_ARGS \
-            -title "Updating brews" -message "$message"
+  if [ -e $TERMINAL_NOTIFIER ]; then
+    lc=$((`echo "$outdated" | wc -l`))
+    outdated=`echo "$outdated" | tail -$lc`
+    message=`echo "$outdated" | head -5`
+    if [ "$outdated" != "$message" ]; then
+      message="... including:
+  $message"
+    else
+      message="$message"
     fi
-    $BREW_EXEC upgrade
-    # 2>&1 | /usr/bin/logger -t mumbrew.upgrade
-    $BREW_EXEC cleanup
-    # 2>&1 | /usr/bin/logger -t mumbrew.cleanup
+    # Send to the Nofication Center
+    $TERMINAL_NOTIFIER $NOTIF_ARGS -title "Updating brews" -message "$message"
+  fi
+  $BREW_EXEC upgrade
+  # 2>&1 | /usr/bin/logger -t mumbrew.upgrade
+  $BREW_EXEC cleanup
+  # 2>&1 | /usr/bin/logger -t mumbrew.cleanup
 fi
 
 echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
