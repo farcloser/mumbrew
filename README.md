@@ -1,4 +1,6 @@
 # Mumbrew
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdubo-dubon-duponey%2Fmumbrew.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdubo-dubon-duponey%2Fmumbrew?ref=badge_shield)
+
 
 Mumbrew is a simple auto-updater for brew.
 
@@ -37,3 +39,7 @@ Log files:
 cat $(brew --prefix)/var/log/mumbrew.out
 cat $(brew --prefix)/var/log/mumbrew.err
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdubo-dubon-duponey%2Fmumbrew.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdubo-dubon-duponey%2Fmumbrew?ref=badge_large)
