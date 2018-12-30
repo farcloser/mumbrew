@@ -35,7 +35,7 @@ $brew_exec upgrade
 $brew_exec cleanup
 
 if [ -e "$notifier" ]; then
-  $notifier "${arguments[@]}" -title "Done updating brews!"
+  $notifier "${arguments[@]}" -title "Done updating brews!" -message ""
 fi
 
 echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
