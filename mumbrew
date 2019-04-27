@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 # Get to brew to get terminal-notifier
-brew_exec=$(command -v brew)
-brew_exec=${brew_exec:-$(dirname "$0")/../../../../bin/brew}
-notifier=$($brew_exec --repository)/bin/terminal-notifier
-arguments=( "-appIcon" "https://brew.sh/img/homebrew-256x256.png" )
+brew_exec="$(command -v brew)"
+brew_exec="${brew_exec:-$(dirname "$0")/../../../../bin/brew}"
+notifier="$($brew_exec --repository)/bin/terminal-notifier"
+arguments=( "-appIcon" "https://brew.sh/assets/img/homebrew-256x256.png" )
 
-$brew_exec update >/dev/null 2>&1
+"$brew_exec" update >/dev/null 2>&1
 outdated=$($brew_exec outdated --quiet | sed -e 's/.*\///')
 pinned=$($brew_exec list --pinned)
 

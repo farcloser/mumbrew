@@ -1,0 +1,13 @@
+language: bash
+
+script:
+  - ./test.sh
+
+addons:
+  homebrew:
+    packages:
+    - shellcheck
+
+matrix:
+  include:
+    - os: osx
