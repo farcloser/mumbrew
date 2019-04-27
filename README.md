@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/dubo-dubon-duponey/mumbrew.svg?branch=master)](https://travis-ci.org/dubo-dubon-duponey/mumbrew)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdubo-dubon-duponey%2Fmumbrew.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdubo-dubon-duponey%2Fmumbrew?ref=badge_shield)
 
-Mumbrew is a simple auto-updater for brew.
+Mumbrew is very simple, easy to use auto-updater for brew.
 
 The service by default runs at 7AM and 10PM, and will upgrade everything that is not pinned.
 
@@ -26,7 +26,6 @@ brew services start mumbrew
 # Configure
 
 You can tweak the service behavior by editing the launch agent plist file:
-
 
 ```
 vi Library/LaunchAgents/homebrew.mxcl.mumbrew.plist

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+shellcheck -a -x "./test.sh"
+shellcheck -a -x "./mumbrew"
+
+./mumbrew
