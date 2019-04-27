@@ -3,4 +3,5 @@
 shellcheck -a -x "./test.sh"
 shellcheck -a -x "./mumbrew"
 
-./mumbrew
+# travis is very outdated and this takes forever
+# ./mumbrew
