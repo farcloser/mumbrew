@@ -28,14 +28,14 @@ if [ ! "$outdated" ] ; then
 fi
 
 if [ -e "$notifier" ]; then
-  $notifier "${arguments[@]}" -title "Updating brews" -message "$outdated"
+  "$notifier" "${arguments[@]}" -title "Updating brews" -message "$outdated"
 fi
 
 $brew_exec upgrade
 $brew_exec cleanup
 
 if [ -e "$notifier" ]; then
-  $notifier "${arguments[@]}" -title "Done updating brews!" -message ""
+  "$notifier" "${arguments[@]}" -title "Done updating brews!" -message ""
 fi
 
 echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
