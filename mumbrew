@@ -7,8 +7,12 @@ set -o errexit -o errtrace -o functrace -o nounset -o pipefail
 # Distributed under the terms of the MIT license
 # ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★
 
+echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
+date
+echo "Starting mumbrew..."
+
 # Get to brew to get terminal-notifier
-brew_exec="$(command -v brew)"
+brew_exec="$(command -v brew || true)"
 brew_exec="${brew_exec:-$(dirname "$0")/../../../../bin/brew}"
 notifier="$($brew_exec --repository)/bin/terminal-notifier"
 arguments=( "-appIcon" "https://avatars.githubusercontent.com/u/142760738?s=400" )
@@ -20,9 +24,6 @@ pinned=$($brew_exec list --pinned)
 # Remove pinned formulae from the list of outdated formulae
 outdated=$(comm -1 -3 <(echo "$pinned") <(echo "$outdated"))
 
-echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
-date
-echo "Starting mumbrew..."
 
 if [ ! "$outdated" ] ; then
   echo "Everything ok, no updates available"
