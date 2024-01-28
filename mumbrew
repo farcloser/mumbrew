@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
+set -o errexit -o errtrace -o functrace -o nounset -o pipefail
+# ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★
+# Tarmac - a very small piece of shcript to scaffold macos machines
+# (c) 2023 Farcloser <apostasie@farcloser.world>
+# (c) 2019 Dubo Dubon Duponey <dubodubonduponey+github@pm.me>
+# Distributed under the terms of the MIT license
+# ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★
 
 # Get to brew to get terminal-notifier
 brew_exec="$(command -v brew)"
 brew_exec="${brew_exec:-$(dirname "$0")/../../../../bin/brew}"
 notifier="$($brew_exec --repository)/bin/terminal-notifier"
-arguments=( "-appIcon" "https://brew.sh/assets/img/homebrew-256x256.png" )
+arguments=( "-appIcon" "https://avatars.githubusercontent.com/u/142760738?s=400" )
 
 "$brew_exec" update >/dev/null 2>&1
 outdated=$($brew_exec outdated --quiet | sed -e 's/.*\///')

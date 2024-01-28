@@ -1,0 +1,32 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    # https://github.com/actions/runner-images
+    runs-on:
+      - macos-11
+      - macos-12
+      - macos-13
+      - macos-13-arm64
+      - macos-14
+      - macos-14-arm64
+      - macos-latest
+      - macos-latest-arm64
+
+    steps:
+      - name: Checks-out repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Enable cache
+        uses: actions/cache@v2.1.1
+        with:
+          path: $GITHUB_WORKSPACE/cache
+          key: cache
+
+      - name: test
+        run: |
+          ./test.sh
