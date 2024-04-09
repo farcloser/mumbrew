@@ -6,23 +6,21 @@ jobs:
   test:
     # https://github.com/actions/runner-images
     runs-on:
-      - macos-11
       - macos-12
       - macos-13
       - macos-13-arm64
       - macos-14
       - macos-14-arm64
       - macos-latest
-      - macos-latest-arm64
 
     steps:
       - name: Checks-out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Enable cache
-        uses: actions/cache@v2.1.1
+        uses: actions/cache@v4
         with:
           path: $GITHUB_WORKSPACE/cache
           key: cache
