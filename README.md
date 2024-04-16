@@ -11,15 +11,8 @@ albeit much simpler and also quite dumber.
 
 Install with brew:
 
-```
+```bash
 brew install farcloser/brews/mumbrew
-brew services start mumbrew
-```
-
-## Disabling / enabling service
-
-```
-brew services stop mumbrew
 brew services start mumbrew
 ```
 
@@ -27,7 +20,7 @@ brew services start mumbrew
 
 You can tweak the service behavior by editing the launch agent plist file:
 
-```
+```bash
 vi Library/LaunchAgents/homebrew.mxcl.mumbrew.plist
 ```
 
@@ -35,7 +28,7 @@ vi Library/LaunchAgents/homebrew.mxcl.mumbrew.plist
 
 Log files:
 
-```
+```bash
 cat $(brew --prefix)/var/log/mumbrew.out
 cat $(brew --prefix)/var/log/mumbrew.err
 ```
