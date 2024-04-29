@@ -9,7 +9,11 @@ jobs:
       matrix:
         #  os: [macos-13-xlarge, macos-14-large]
         # x86, x86, arm64 - other architectures ^ require a paying sub (?)
-        os: [macos-12, macos-13, macos-14]
+        # While mumbrew does work on macos-12, the installed packages on the macos-12 GitHub runner
+        # cannot be upgraded as some dependency on XCode 15 cannot be satisfied, hence making a call to ./mumbrew fail
+        # Disabling the test on that platform then.
+        # os: [macos-12, macos-13, macos-14]
+        os: [macos-13, macos-14]
     runs-on: ${{ matrix.os }}
 
     steps:
