@@ -5,13 +5,12 @@ on: [push, pull_request]
 jobs:
   test:
     # https://github.com/actions/runner-images
-    runs-on:
-      - macos-12
-      - macos-13
-      - macos-13-arm64
-      - macos-14
-      - macos-14-arm64
-      - macos-latest
+    strategy:
+      matrix:
+        #  os: [macos-13-xlarge, macos-14-large]
+        # x86, x86, arm64 - other architectures ^ require a paying sub (?)
+        os: [macos-12, macos-13, macos-14]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checks-out repository
@@ -27,4 +26,5 @@ jobs:
 
       - name: test
         run: |
+          brew install shellcheck
           ./test.sh
