@@ -13,7 +13,10 @@ echo "Starting mumbrew..."
 
 # Get to brew to get terminal-notifier
 brew_exec="$(command -v brew || true)"
-brew_exec="${brew_exec:-$(dirname "$0")/../../../../bin/brew}"
+# This does not work as expected - instead, assume we are inside HOMEBREW_PREFIX (which the install formula does)
+# brew_exec="${brew_exec:-$(dirname "$0")/../../../../bin/brew}"
+brew_exec="${brew_exec:-$(pwd)/homebrew/bin/brew}"
+
 notifier="$($brew_exec --repository)/bin/terminal-notifier"
 arguments=( "-appIcon" "https://avatars.githubusercontent.com/u/142760738?s=400" )
 
