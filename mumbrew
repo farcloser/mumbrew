@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -o errexit -o errtrace -o functrace -o nounset -o pipefail
 # ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★
-# Tarmac - a very small piece of shcript to scaffold macos machines
 # (c) 2023 Farcloser <apostasie@farcloser.world>
 # (c) 2019 Dubo Dubon Duponey <dubodubonduponey+github@pm.me>
 # Distributed under the terms of the MIT license
@@ -26,7 +25,6 @@ pinned=$($brew_exec list --pinned)
 
 # Remove pinned formulae from the list of outdated formulae
 outdated=$(comm -1 -3 <(echo "$pinned") <(echo "$outdated"))
-
 
 if [ ! "$outdated" ] ; then
   echo "Everything ok, no updates available"
