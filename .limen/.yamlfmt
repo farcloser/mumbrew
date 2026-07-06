@@ -1,0 +1,56 @@
+# DO NOT EDIT MANUALLY.
+# This file is common to all projects and managed by limen.
+# Global configuration changes proposals can be discussed on https://github.com/farcloser/limen
+
+# .yamlfmt — https://github.com/google/yamlfmt
+# Formatter: the 'basic' formatter is the only one; these are its options.
+formatter:
+  type: basic
+
+  # LF everywhere, explicitly: yamlfmt's default flips to CRLF on Windows,
+  # which would flag every (correctly LF) file. Same doctrine as the pinned
+  # .editorconfig and .gitattributes: line endings never vary by platform.
+  line_ending: lf
+
+  # --- indentation ---
+  indent: 2                      # match your .editorconfig (2-space YAML)
+  include_document_start: false  # don't force a leading `---` on every file
+
+  # --- the defaults worth overriding ---
+  retain_line_breaks_single: true  # collapse runs of blank lines to ONE, but keep
+                                   # intentional single blank lines (readability).
+                                   # Prefer this over retain_line_breaks, which keeps
+                                   # *all* blank lines and barely normalizes anything.
+
+  scan_folded_as_literal: false    # leave folded (>) scalars folded; don't rewrite to literal (|)
+
+  # --- correctness / safety ---
+  disallow_anchors: false          # set true ONLY if you want to forbid &anchors/*aliases
+  max_line_length: 0               # 0 = no wrapping. Leave OFF — yamlfmt's wrapping is
+                                   # crude and mangles long values; let humans wrap.
+
+  # --- quoting / strings: leave alone ---
+  # yamlfmt is deliberately light on string normalization. Don't fight it; it won't
+  # aggressively re-quote, which is the safe default for mixed YAML (k8s, CI, etc.)
+
+# --- which files to format ---
+# Every pattern below is doublestar syntax (`**/`, `{yaml,yml}` braces), which
+# yamlfmt does NOT use unless told to: without this switch it hands patterns to
+# the filesystem, where POSIX shrugs (ENOENT, silently no-op) but Windows
+# hard-fails (`CreateFile .git/**: ... syntax is incorrect`).
+doublestar: true
+
+include:
+  - "**/*.{yaml,yml}"
+
+gitignore_excludes: true
+
+exclude:
+  - ".git/**"
+  - "**/vendor/**"
+  - "**/testdata/**"        # don't reformat fixtures — tests may assert exact bytes
+  - "**/*.gen.{yaml,yml}"   # leave generated YAML alone
+
+# Stop at a file that fails to parse — malformed YAML must fail hard, in CI
+# and everywhere else.
+continue_on_error: false

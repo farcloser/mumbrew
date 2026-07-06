@@ -1,0 +1,115 @@
+# DO NOT EDIT MANUALLY.
+# This workflow is generic — no project-specific content — and is destined to
+# become part of the canonical baseline limen distributes.
+#
+# The other half of Renovate: the bot bumps versions in aqua.yaml but cannot
+# do the repo-specific follow-up, so without this workflow every version-bump
+# PR would merge half-applied. Two follow-ups, on pushes to Renovate's
+# branches, one fix-up commit:
+#   1. Regenerate aqua-checksums.json with real aqua — a bumped pin with a
+#      stale checksum breaks every install.
+#   2. Converge the limen baseline: when the branch bumps the farcloser/limen
+#      pin, the repo's canonical files must move with it — a repo is coherent
+#      only when the limen that wrote its files is the limen it pins (an old
+#      baseline checked by the new limen is red, and vice versa). The
+#      branch's own pinned limen runs `fix`; on branches bumping anything
+#      else it is a no-op.
+#
+# This is a WRITE workflow — the hardening is deliberate:
+#   - `push:` on the branch prefix, never pull_request_target: it runs in the
+#     repo's own context, on branches only writers (the Renovate app) can
+#     create.
+#   - The checkout keeps no credential, and the update steps run with no
+#     secrets in their environment. Neither goes through `just` — the one
+#     sanctioned deviation: a write-capable workflow does not execute recipe
+#     code the branch controls. `aqua update-checksum` only downloads and
+#     hashes declared artifacts; the converge step executes exactly one
+#     binary, the checksum-pinned limen release the branch declares.
+#   - The push step runs only git, with the token scoped to that single step.
+#   - The branch name reaches the shell via env, never template interpolation
+#     (script-injection hygiene).
+#   - No loop: a push made with the default GITHUB_TOKEN triggers no further
+#     workflows — and the no-change early exit terminates recursion
+#     regardless.
+#
+# Known trade of the default token: GitHub suppresses workflow runs for
+# commits it pushes, so the PR's CI does not re-run on the checksum commit.
+# To get CI on the final state of Renovate PRs, add a fine-grained PAT (or
+# GitHub App token) with contents:write as the UPDATE_AQUA_CHECKSUM_TOKEN
+# secret — the workflow prefers it automatically.
+name: update-aqua-checksum
+
+on:
+  push:
+    branches: ["renovate/**"]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Every run step is bash, explicitly: runner-OS shell defaults are a trap
+# (windows defaults to PowerShell), and explicit bash adds `-eo pipefail`.
+# Uniform across all canonical workflows so adding a runner never changes
+# what the steps mean.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install aqua (pinned, checksum-verified)
+        uses: ./.github/actions/setup-aqua
+
+      - name: Regenerate aqua-checksums.json
+        # No tool install: update-checksum only reads the manifest and hashes
+        # upstream artifacts — the smallest possible surface for a write job.
+        # Runs first: it is what makes the branch's limen pin installable for
+        # the converge step below.
+        run: aqua update-checksum --prune
+
+      - name: Converge the limen baseline
+        # `aqua exec` resolves the branch's own farcloser/limen pin (checksums
+        # fresh from the step above), downloads it verified, and `limen fix`
+        # rewrites whatever the new baseline moved. A released limen leaves
+        # its own pin alone (it already matches), so this cannot ping-pong.
+        # Skipped in the limen repository itself: there the working tree IS
+        # the next baseline (the recipes run it via LIMEN_BIN), and a released
+        # limen "converging" it would revert in-flight baseline work.
+        if: github.repository != 'farcloser/limen'
+        run: aqua exec -- limen fix .
+
+      - name: Push the update, if any
+        env:
+          BRANCH: ${{ github.ref_name }}
+          TOKEN: ${{ secrets.UPDATE_AQUA_CHECKSUM_TOKEN || github.token }}
+        run: |
+          [ -z "$(git status --porcelain)" ] && { echo "checksums and baseline already in sync"; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # `--all` is deliberate, not sloppiness. The tree is fully accounted
+          # for: a fresh checkout, aqua rooted outside the workspace, and
+          # exactly two writers between checkout and here — update-checksum
+          # and the pinned limen's fix. Whatever is dirty IS the payload. An
+          # enumerated path list would be wrong: the converge step's job is to
+          # commit whatever the NEW limen's baseline says, and a list baked
+          # into the older running workflow cannot know that surface (the
+          # updated workflow arrives in the very commit being built). Nor
+          # would a list add safety — the only writer that could plant a file
+          # is limen fix itself, and .limen/.github would be on any list.
+          git add --all
+          # Signed-off-by: `just do lint commits` enforces DCO on the PR range,
+          # bot commits included.
+          git commit -m "chore: update aqua checksums and converge the limen baseline" \
+            -m "Signed-off-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          git push "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${BRANCH}"

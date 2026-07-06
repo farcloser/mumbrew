@@ -1,0 +1,80 @@
+# DO NOT EDIT MANUALLY.
+# This file is common to all projects and managed by limen.
+# Most tools can be installed directly from aqua registry without local overrides.
+# Addition of non-standard tools can be discussed on https://github.com/farcloser/limen
+
+packages:
+  # The /v2 module-path suffix is mandatory (Go semantic import versioning):
+  # `go install github.com/google/go-licenses@v2.x` is rejected by the
+  # toolchain. Go strips the /v2 when naming the binary; files spells it out.
+  - type: go_install
+    path: github.com/google/go-licenses/v2
+    description: Report on the licenses of a Go project's dependencies
+    version_source: github_tag
+    files:
+      - name: go-licenses
+  - type: go_install
+    path: github.com/vbatts/git-validation
+    description: Validate git commit rules (DCO sign-off, subject length, …)
+    version_source: github_tag
+  # Graphviz `dot` as a single static Go binary: the real graphviz C code
+  # compiled to WASM, executed via wazero — no C toolchain, no shared
+  # libraries, which is why this can live in aqua while system graphviz
+  # cannot. Renders the PNGs of `just do test go profile`. The cmd/dot module is
+  # nested and untagged upstream, hence the explicit repo and the
+  # pseudo-version pin in aqua.yaml.
+  - type: go_install
+    name: github.com/goccy/go-graphviz/cmd/dot
+    path: github.com/goccy/go-graphviz/cmd/dot
+    repo_owner: goccy
+    repo_name: go-graphviz
+    description: Graphviz dot CLI, pure-Go build (WASM via wazero)
+    version_source: github_tag
+  # The Go team distributes govulncheck via `go install` only, by policy. The
+  # repo is not inferable from the golang.org import path, hence the explicit
+  # owner/name (same as the standard registry does for gopls).
+  - type: go_install
+    name: golang.org/x/vuln/cmd/govulncheck
+    path: golang.org/x/vuln/cmd/govulncheck
+    repo_owner: golang
+    repo_name: vuln
+    description: Scan dependencies against the Go vulnerability database
+    version_source: github_tag
+  # Same golang.org path situation as govulncheck: explicit name and repo.
+  - type: go_install
+    name: golang.org/x/tools/cmd/deadcode
+    path: golang.org/x/tools/cmd/deadcode
+    repo_owner: golang
+    repo_name: tools
+    description: Whole-program detection of unreachable functions
+    version_source: github_tag
+  # hadolint as pure Go, from the farcloser stable. The binary is the nested
+  # cmd/godolint package of the root module — explicit name and repo, same
+  # shape as go-graphviz's cmd/dot above (tags live at the repo root).
+  - type: go_install
+    name: github.com/farcloser/godolint/cmd/godolint
+    path: github.com/farcloser/godolint/cmd/godolint
+    repo_owner: farcloser
+    repo_name: godolint
+    description: Lint Dockerfiles (a pure-Go port of hadolint)
+    version_source: github_tag
+  # limen itself: every repo pins the version that enforces it, so the binary
+  # and the canonical files it embeds travel together (no version skew between
+  # the checker and the checked). Graduates to the standard registry once
+  # farcloser/limen is registered there.
+  - type: github_release
+    repo_owner: farcloser
+    repo_name: limen
+    description: Verify a repository against Farcloser engineering rules
+    asset: limen_{{trimV .Version}}_{{.OS}}_{{.Arch}}.tar.gz
+    format: tar.gz
+    files:
+      - name: limen
+    checksum:
+      type: github_release
+      asset: checksums.txt
+      algorithm: sha256
+    supported_envs:
+      - darwin
+      - linux
+      - windows

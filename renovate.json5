@@ -1,0 +1,32 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    "config:recommended",
+    // Default preset: detects owner/repo@ver and go-module packages in aqua.yaml,
+    // updates the standard-registry ref, and bumps aqua_version in CI/devcontainer too.
+    "github>aquaproj/aqua-renovate-config#2.13.0",
+  ],
+  // Supply-chain cooldown: wait before proposing a bump. Doubles as protection
+  // against the race where a release tag exists but its assets aren't uploaded yet.
+  minimumReleaseAge: "3 days",
+  // `just lint commits` enforces DCO on every PR range, bot commits included.
+  commitBody: "Signed-off-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>",
+  // The update-aqua-checksum workflow pushes a fix-up commit onto Renovate's
+  // branches; without this, Renovate treats the branch as human-modified and
+  // stops rebasing it.
+  gitIgnoredAuthors: ["41898282+github-actions[bot]@users.noreply.github.com"],
+  customManagers: [
+    // The aqua preset above only manages the lowercase `aqua_version:` input of
+    // the official installer action, and aqua.yaml itself. The AQUA_VERSION env
+    // of the hand-rolled installer (.github/actions/setup-aqua) needs its own
+    // manager, keyed on the standard renovate comment above the pin.
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/.+\\.ya?ml$/"],
+      matchStrings: [
+        "# renovate: depName=(?<depName>[^\\s]+)\\n\\s*AQUA_VERSION: (?<currentValue>[^\\s]+)",
+      ],
+      datasourceTemplate: "github-releases",
+    },
+  ],
+}
