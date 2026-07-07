@@ -4,3 +4,4 @@ import '.limen/just/main.just'
 
 lint: do::lint::default
 fix: do::fix::default
+test:
