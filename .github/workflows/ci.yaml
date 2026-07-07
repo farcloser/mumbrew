@@ -1,0 +1,82 @@
+# DO NOT EDIT MANUALLY.
+# This workflow is generic — no project-specific content — and is destined to
+# become part of the canonical baseline limen distributes.
+#
+# Design: minimal GitHub glue around the same tooling every developer runs
+# locally. The only marketplace action is GitHub's own checkout, pinned by
+# commit SHA (a tag can be moved to malicious code; a SHA cannot). Everything
+# else is pinned, checksum-verified shell: aqua installs the repo's tools at
+# the versions aqua.yaml pins, and `just` runs the exact recipes a laptop
+# runs — CI green means the same thing as local green, by construction.
+# Deliberately absent: runner egress filtering — the available options are
+# third-party actions, which this workflow avoids on principle.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# No default token permissions: each job states what it needs. This workflow
+# only ever reads the repository — it cannot write code, releases, or
+# packages even if a step is compromised.
+permissions: {}
+
+# A superseded run (new push to the same branch/PR) is cancelled, not raced.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Every run step is bash on every runner: without this, windows defaults to
+# PowerShell, which never sees the git-bash environment setup-aqua prepares
+# (the whole matrix is designed to run the recipes under git-bash). Explicit
+# bash also means `-eo pipefail` everywhere, which the implicit linux/macos
+# default lacks.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Pinned images, not -latest: a runner bump is a reviewed change.
+        # macOS is not redundant: its /bin/bash is 3.2, the portability floor
+        # the shared recipes target. arm64 (ubuntu-24.04-arm) and windows
+        # cover the rest of the supported release matrix — windows runs the
+        # recipes under git-bash.
+        # These entries are also the default required-status-check contexts of
+        # the canonical limen:main ruleset (defaultRequiredChecks in
+        # internal/github/audit.go) — change the two together, in one release.
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    # Generous for the windows leg: those runners are markedly slower, and the
+    # per-GOOS lint recipes now run three legs each.
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # The token is not left behind in .git/config: nothing in this
+          # workflow talks to GitHub after checkout.
+          persist-credentials: false
+          # Full history and refs: `just lint commits` validates the commit
+          # range against the PR's base branch, which a shallow clone lacks.
+          fetch-depth: 0
+
+      - name: Install aqua (pinned, checksum-verified)
+        uses: ./.github/actions/setup-aqua
+
+      - name: Install pinned tools
+        # Link-only: the shims download each tool lazily on first use (and it
+        # is verified against the committed aqua-checksums.json then), so a
+        # job only ever pays for the tools its recipes actually run.
+        run: aqua install --only-link
+
+      - name: Lint
+        run: just lint
+
+      - name: Test
+        run: just test

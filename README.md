@@ -4,7 +4,7 @@ Mumbrew is very simple, easy to use auto-updater for brew.
 
 The service by default runs at 2AM, and will upgrade everything that is not pinned.
 
-This is similar in principle to https://github.com/Homebrew/homebrew-autoupdate
+This is similar in principle to https://github.com/DomT4/homebrew-autoupdate
 albeit much simpler and also quite dumber.
 
 ## Install
@@ -13,6 +13,7 @@ Install with brew:
 
 ```bash
 brew install farcloser/brews/mumbrew
+brew trust --formula farcloser/brews/mumbrew
 brew services start mumbrew
 ```
 
@@ -35,4 +36,6 @@ cat $(brew --prefix)/var/log/farcloser.mumbrew.err.log
 
 ## Development
 
-You need shellcheck (`brew install shellcheck`).
+```
+just lint-all
+```

@@ -17,7 +17,6 @@ brew_exec="$(command -v brew || true)"
 brew_exec="${brew_exec:-$(pwd)/bin/brew}"
 
 notifier="$($brew_exec --repository)/bin/terminal-notifier"
-arguments=( "-appIcon" "https://avatars.githubusercontent.com/u/142760738?s=400" )
 
 "$brew_exec" update >/dev/null 2>&1
 outdated=$($brew_exec outdated --quiet | sed -e 's/.*\///')
@@ -26,25 +25,25 @@ pinned=$($brew_exec list --pinned)
 # Remove pinned formulae from the list of outdated formulae
 outdated=$(comm -1 -3 <(echo "$pinned") <(echo "$outdated"))
 
-if [ ! "$outdated" ] ; then
-  echo "Everything ok, no updates available"
-  #if [ -e "$notifier" ]; then
-    # $notifier $arguments \
-    #    -title "Everything ok" \
-    #    -message "No updates available."
-  #fi
+if [ -z "$outdated" ] ; then
+  echo "Mumbrew: everything up to date"
+  if [ -e "$notifier" ]; then
+     $notifier \
+        -title "Mumbrew" \
+        -message "Everything up to date"
+  fi
   exit
 fi
 
 if [ -e "$notifier" ]; then
-  $notifier "${arguments[@]}" -title "Updating brews" -message "$outdated"
+  $notifier -title "Mumbrew: updating" -message "$outdated"
 fi
 
 $brew_exec upgrade
 $brew_exec cleanup
 
 if [ -e "$notifier" ]; then
-  $notifier "${arguments[@]}" -title "Done updating brews!" -message ""
+  $notifier -title "Mumbrew" -message "Done updating!"
 fi
 
 echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"

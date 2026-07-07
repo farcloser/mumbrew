@@ -1,0 +1,49 @@
+# aqua — Declarative CLI Version Manager — https://aquaproj.github.io/
+checksum:
+  enabled: true
+  require_checksum: true
+  supported_envs:
+    - darwin/amd64
+    - darwin/arm64
+    - linux/amd64
+    - linux/arm64
+    - windows/amd64
+    - windows/arm64
+
+registries:
+  - type: standard
+    ref: v4.530.0 # renovate: depName=aquaproj/aqua-registry
+  - name: local
+    type: local
+    path: .limen/aqua-registry.yaml
+
+packages:
+  # --- go install tools (local registry, GOSUMDB-verified) ---
+  - name: github.com/google/go-licenses/v2@v2.0.1
+    registry: local
+  - name: github.com/vbatts/git-validation@v1.2.2
+    registry: local
+  - name: golang.org/x/vuln/cmd/govulncheck@v1.5.0
+    registry: local
+  - name: golang.org/x/tools/cmd/deadcode@v0.47.0
+    registry: local
+  # Pseudo-version: the nested cmd/dot module carries no tags upstream.
+  - name: github.com/goccy/go-graphviz/cmd/dot@v0.0.0-20251129032125-76e04975df88
+    registry: local
+  - name: github.com/farcloser/godolint/cmd/godolint@v0.1.0
+    registry: local
+  # --- farcloser tools (local registry; standard once registered upstream) ---
+  - name: farcloser/limen@v0.0.2 # renovate: depName=farcloser/limen
+    registry: local
+  # --- toolchain + binary-release tools (standard registry, aqua-verified) ---
+  - name: golang/go@go1.26.4
+  - name: casey/just@1.55.1
+  - name: koalaman/shellcheck@v0.11.0
+  - name: golangci/golangci-lint@v2.12.2
+  - name: google/yamlfmt@v0.21.0
+  - name: lycheeverse/lychee@lychee-v0.24.2
+  - name: goreleaser/goreleaser@v2.16.0
+  - name: sigstore/cosign@v3.1.1
+  - name: gotestyourself/gotestsum@v1.13.0
+  - name: jqlang/jq@jq-1.8.2
+  - name: cli/cli@v2.96.0
