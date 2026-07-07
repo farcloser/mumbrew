@@ -7,8 +7,8 @@ set working-directory := '../..'
 # Silence just's per-line command echo; recipes announce themselves via _banner.
 set quiet
 
-# Shared private _banner recipe (see _lib.just).
-import '_lib.just'
+# Shared private _banner recipe (see lib.just).
+import 'lib.just'
 
 # Homebrew formula linting runs through brew itself: brew vendors its own Ruby
 # and its own RuboCop with the Homebrew cops, so this module needs no Ruby

@@ -7,8 +7,8 @@ set working-directory := '../..'
 # Silence just's per-line command echo; recipes announce themselves via _banner.
 set quiet
 
-# Shared private _banner recipe (see _lib.just).
-import '_lib.just'
+# Shared private _banner recipe (see lib.just).
+import 'lib.just'
 
 # The mutating counterpart of `just do lint homebrew` — brew's vendored
 # RuboCop with --fix. Same machine-layer exception as the lint module:

@@ -7,8 +7,8 @@ set working-directory := '../..'
 # Silence just's per-line command echo; recipes announce themselves via _banner.
 set quiet
 
-# Shared private _banner recipe (see _lib.just).
-import '_lib.just'
+# Shared private _banner recipe (see lib.just).
+import 'lib.just'
 
 # --- Project tooling via aqua (see book/tooling.md). Each recipe takes the
 #     owner/repo exactly as it appears in aqua.yaml, e.g. golangci/golangci-lint. ---
@@ -43,16 +43,18 @@ set pkg version: (_banner "tools" "set")
     aqua update-checksum --prune      # new checksum in, replaced version's out
     aqua install --only-link          # install and verify
 
-# Update an existing tool to its latest version, e.g. `just do tools update golangci/golangci-lint`.
-update pkg: (_banner "tools" "update")
+# Update an existing tool to its latest version, e.g. `just do tools update golangci-lint`.
+# Takes the COMMAND name (the executable you type — `just`, `limen`), not the
+# owner/name package slug: it delegates to `aqua update`, which resolves a
+# command to its pinned package — local-registry packages included. (The
+# previous `aqua generate` approach could not work: generate refuses to
+# re-emit an already-pinned package, which is the only kind update meets.)
+update command: (_banner "tools" "update")
     #!/usr/bin/env bash
     set -euo pipefail
-    latest=$(aqua generate "{{ pkg }}" 2>/dev/null | grep -E 'name:' | head -n 1 | sed -E 's/.*@//' | tr -d '[:space:]')
-    if [ -z "$latest" ]; then
-        echo "could not resolve the latest version of {{ pkg }}." >&2
-        exit 1
-    fi
-    just do tools set "{{ pkg }}" "$latest"
+    aqua update "{{ command }}"       # bump aqua.yaml to the latest release
+    aqua update-checksum --prune      # new checksum in, replaced version's out
+    aqua install --only-link          # install and verify
 
 # Remove a tool entirely, e.g. `just do tools remove junegunn/fzf`.
 remove pkg: (_banner "tools" "remove")

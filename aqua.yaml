@@ -8,6 +8,7 @@ checksum:
     - linux/amd64
     - linux/arm64
     - windows/amd64
+    - windows/arm64
 
 registries:
   - type: standard
@@ -32,7 +33,7 @@ packages:
   - name: github.com/farcloser/godolint/cmd/godolint@v0.1.0
     registry: local
   # --- farcloser tools (local registry; standard once registered upstream) ---
-  - name: farcloser/limen@v0.0.1 # renovate: depName=farcloser/limen
+  - name: farcloser/limen@v0.0.2 # renovate: depName=farcloser/limen
     registry: local
   # --- toolchain + binary-release tools (standard registry, aqua-verified) ---
   - name: golang/go@go1.26.4

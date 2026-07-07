@@ -7,12 +7,12 @@ set working-directory := '../..'
 # Silence just's per-line command echo; recipes announce themselves via _banner.
 set quiet
 
-# Shared private _banner recipe (see _lib.just).
-import '_lib.just'
+# Shared private _banner recipe (see lib.just).
+import 'lib.just'
 
 default: code mod vuln licenses
 
-# golangci-lint, once per supported platform (see _per-goos in _lib.just:
+# golangci-lint, once per supported platform (see _per-goos in lib.just:
 # platform-specific files are only analyzed for the GOOS that builds them).
 # The formatter is build-graph-independent and runs once. The last step bans
 # blanket revive suppressions: nolintlint polices golangci directives, and
@@ -29,11 +29,11 @@ mod: (_banner "lint go" "mod")
 
 # Known-vulnerability scan against the Go vulnerability database (network:
 # govulncheck fetches vuln.go.dev), once per supported platform (see _per-goos
-# in _lib.just: call paths and dependencies differ by GOOS).
+# in lib.just: call paths and dependencies differ by GOOS).
 vuln: (_banner "lint go" "vuln") (_per-goos "govulncheck ./...")
 
 # Dependency license compliance, once per supported platform (see _per-goos in
-# _lib.just: each GOOS pulls its own dependencies). A project that needs extra
+# lib.just: each GOOS pulls its own dependencies). A project that needs extra
 # flags — typically --ignore=<module> for the module-layout false positives of
 # https://github.com/google/go-licenses/issues/186 — exports them from its
 # the root Justfile, the home of all project customization (the variable name

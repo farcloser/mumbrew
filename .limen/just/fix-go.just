@@ -7,13 +7,13 @@ set working-directory := '../..'
 # Silence just's per-line command echo; recipes announce themselves via _banner.
 set quiet
 
-# Shared private _banner recipe (see _lib.just).
-import '_lib.just'
+# Shared private _banner recipe (see lib.just).
+import 'lib.just'
 
 default: code mod
 
 # golangci-lint auto-fixes, once per supported platform (see _per-goos in
-# _lib.just: platform-specific files are only analyzed for the GOOS that
+# lib.just: platform-specific files are only analyzed for the GOOS that
 # builds them). The formatter is build-graph-independent and runs once — last,
 # so the fixes' edits end up formatted.
 code: (_banner "fix go" "go") (_per-goos "golangci-lint run --fix")

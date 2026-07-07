@@ -74,6 +74,20 @@ packages:
       type: github_release
       asset: checksums.txt
       algorithm: sha256
+      # Signatures are verified whenever upstream publishes them (see the
+      # book's signature doctrine): the release signs checksums.txt keyless
+      # from CI (goreleaser cosign lane), which transitively covers every
+      # asset the file lists. The identity IS the release workflow at the
+      # exact tag — a bundle signed by anything else fails the install.
+      cosign:
+        bundle:
+          type: github_release
+          asset: checksums.txt.sigstore.json
+        opts:
+          - --certificate-identity
+          - https://github.com/farcloser/limen/.github/workflows/release.yaml@refs/tags/{{.Version}}
+          - --certificate-oidc-issuer
+          - https://token.actions.githubusercontent.com
     supported_envs:
       - darwin
       - linux

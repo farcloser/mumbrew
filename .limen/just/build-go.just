@@ -7,8 +7,8 @@ set working-directory := '../..'
 # Silence just's per-line command echo; recipes announce themselves via _banner.
 set quiet
 
-# Shared private _banner recipe (see _lib.just).
-import '_lib.just'
+# Shared private _banner recipe (see lib.just).
+import 'lib.just'
 
 # Ported from the historical Make build system, corrected along the way:
 #   - a "binary" is a DIRECTORY under cmd/ that contains Go sources — a stray

@@ -34,9 +34,14 @@
 #
 # Known trade of the default token: GitHub suppresses workflow runs for
 # commits it pushes, so the PR's CI does not re-run on the checksum commit.
-# To get CI on the final state of Renovate PRs, add a fine-grained PAT (or
-# GitHub App token) with contents:write as the UPDATE_AQUA_CHECKSUM_TOKEN
-# secret — the workflow prefers it automatically.
+# To get CI on the final state of Renovate PRs, register a GitHub App —
+# contents:write only, webhook disabled, installed on the org; no infra, it
+# is just an identity — and set the org variable UPDATE_AQUA_CHECKSUM_APP_ID
+# plus the org secret UPDATE_AQUA_CHECKSUM_APP_PRIVATE_KEY: the workflow
+# then mints a one-hour, this-repo-only token per run, so there is no
+# long-lived broad credential and nothing that expires on a calendar. A
+# fine-grained PAT with contents:write as UPDATE_AQUA_CHECKSUM_TOKEN is the
+# drop-in alternative; the token preference order is App, PAT, default.
 name: update-aqua-checksum
 
 on:
@@ -89,10 +94,23 @@ jobs:
         if: github.repository != 'farcloser/limen'
         run: aqua exec -- limen fix .
 
+      - name: Mint a push token, if the App is configured
+        # Placed after the update steps so those still run with no secrets in
+        # their environment. The minted token lives one hour and is scoped to
+        # this repository only; the long-lived private key exists solely to
+        # mint and never authorizes a push itself. Guarded on the variable so
+        # repos without the App fall through to the token chain below.
+        if: vars.UPDATE_AQUA_CHECKSUM_APP_ID != ''
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.UPDATE_AQUA_CHECKSUM_APP_ID }}
+          private-key: ${{ secrets.UPDATE_AQUA_CHECKSUM_APP_PRIVATE_KEY }}
+
       - name: Push the update, if any
         env:
           BRANCH: ${{ github.ref_name }}
-          TOKEN: ${{ secrets.UPDATE_AQUA_CHECKSUM_TOKEN || github.token }}
+          TOKEN: ${{ steps.app-token.outputs.token || secrets.UPDATE_AQUA_CHECKSUM_TOKEN || github.token }}
         run: |
           [ -z "$(git status --porcelain)" ] && { echo "checksums and baseline already in sync"; exit 0; }
           git config user.name "github-actions[bot]"
