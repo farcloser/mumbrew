@@ -32,10 +32,11 @@ brew update >/dev/null 2>&1
 outdated=$(brew outdated --quiet | sed -e 's/.*\///')
 pinned=$(brew list --pinned)
 
-# Remove pinned formulae from the list of outdated formulae
-outdated=$(comm -1 -3 <(echo "$pinned") <(echo "$outdated"))
+# brew upgrade skips pinned formulae; the report leaves them out too. A
+# whole-line match, because comm would need both lists sorted alike.
+outdated=$(grep -vxF -f <(printf '%s\n' "$pinned") <<<"$outdated" || true)
 
-if [ -z "$outdated" ] ; then
+if [ -z "$outdated" ]; then
   echo "Everything up to date"
   notify "Everything up to date" "No updates available"
   exit
