@@ -35,4 +35,9 @@ cat $(brew --prefix)/var/log/farcloser.mumbrew.err.log
 
 ## Development
 
-You need shellcheck (`brew install shellcheck`).
+The toolchain is pinned by [limen](https://github.com/farcloser/limen) and installed by aqua.
+
+```bash
+just lint
+just test
+```
