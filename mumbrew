@@ -24,11 +24,16 @@ notify(){
   "$notifier" -group mumbrew -title "Mumbrew" -subtitle "$1" -message "$2" >/dev/null || true
 }
 
+# Any failing step ends the run (errexit); this says so on screen, where a
+# 2AM run is otherwise silent. The detail is in the service's error log.
+trap 'notify "Failed" "See farcloser.mumbrew.err.log in Homebrew'"'"'s var/log"' ERR
+
 echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
 date
 echo "Starting mumbrew..."
 
-brew update >/dev/null 2>&1
+# stdout only: brew's errors belong in the service's error log.
+brew update >/dev/null
 outdated=$(brew outdated --quiet | sed -e 's/.*\///')
 pinned=$(brew list --pinned)
 
