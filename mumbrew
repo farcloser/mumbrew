@@ -6,10 +6,6 @@ set -o errexit -o errtrace -o functrace -o nounset -o pipefail
 # Distributed under the terms of the MIT license
 # ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★
 
-echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
-date
-echo "Starting mumbrew..."
-
 # Under launchd, brew is on PATH only when the service's plist was written
 # from a formula that sets it; one written before has the system's PATH alone,
 # until the service is restarted. Every plist sets the working directory to
@@ -19,7 +15,18 @@ command -v brew >/dev/null || PATH="$(pwd)/bin:$PATH"
 # terminal-notifier is Homebrew's own: the version the tap pins, whatever else
 # is on PATH.
 notifier="$(brew --prefix)/bin/terminal-notifier"
-arguments=( "-appIcon" "https://avatars.githubusercontent.com/u/142760738?s=400" )
+
+# notify <subtitle> <message>: one notification group, so each one replaces
+# the last instead of stacking. mumbrew runs without terminal-notifier, and a
+# notification that fails to post never fails the run.
+notify(){
+  [ -x "$notifier" ] || return 0
+  "$notifier" -group mumbrew -title "Mumbrew" -subtitle "$1" -message "$2" >/dev/null || true
+}
+
+echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
+date
+echo "Starting mumbrew..."
 
 brew update >/dev/null 2>&1
 outdated=$(brew outdated --quiet | sed -e 's/.*\///')
@@ -29,24 +36,16 @@ pinned=$(brew list --pinned)
 outdated=$(comm -1 -3 <(echo "$pinned") <(echo "$outdated"))
 
 if [ -z "$outdated" ] ; then
-  echo "Everything ok, no updates available"
-  #if [ -e "$notifier" ]; then
-    # $notifier $arguments \
-    #    -title "Everything ok" \
-    #    -message "No updates available."
-  #fi
+  echo "Everything up to date"
+  notify "Everything up to date" "No updates available"
   exit
 fi
 
-if [ -x "$notifier" ]; then
-  "$notifier" "${arguments[@]}" -title "Updating brews" -message "$outdated"
-fi
+notify "Updating" "$(paste -sd ' ' - <<<"$outdated")"
 
 brew upgrade
 brew cleanup
 
-if [ -x "$notifier" ]; then
-  "$notifier" "${arguments[@]}" -title "Done updating brews!" -message ""
-fi
+notify "Done updating" "$(paste -sd ' ' - <<<"$outdated")"
 
 echo "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★"
