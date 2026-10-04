@@ -11,7 +11,6 @@ Desktop.ini
 
 # Build output and Go artifacts
 /build
-/tmp
 
 # Scratch / work-in-progress files
 # *.local
