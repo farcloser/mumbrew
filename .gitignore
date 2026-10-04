@@ -1,4 +1,61 @@
+# --- OS noise ---
 .DS_Store
-.idea
-_*
+Thumbs.db
+Desktop.ini
+
+# --- Editor / IDE ---
+.idea/
+.vscode/
+*.swp
+*~
+
+# Build output and Go artifacts
 /build
+/tmp
+
+# Scratch / work-in-progress files
+# *.local
+_scratch/
+# WIP_*
+
+# =========================
+#  Rust
+# =========================
+# Cargo build output
+# /target/
+
+# Cargo.lock: COMMIT for binaries/apps, IGNORE for libraries.
+# Uncomment the next line ONLY if this is a published library crate:
+# Cargo.lock
+# Backup files from `cargo fmt` / rustfmt edits
+# **/*.rs.bk
+
+# MSVC debug info (Windows toolchain)
+# *.pdb
+
+# =========================
+#  Svelte / SvelteKit / Node
+# =========================
+# Dependencies
+# node_modules/
+
+# SvelteKit build + generated types/runtime
+# .svelte-kit/
+
+# Vite cache/output
+# .vite/
+# vite.config.*.timestamp-*
+
+# Package manager debug logs
+# npm-debug.log*
+# yarn-debug.log*
+# yarn-error.log*
+# pnpm-debug.log*
+
+# Audit scratchpads: notes to be evaluated for possible issues, never a
+# deliverable — the findings that survive become code, tests, or the book.
+AUDIT.md
+
+# --- this project's own ---
+# Anything prefixed with an underscore is local scratch.
+_*
