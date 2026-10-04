@@ -40,6 +40,10 @@ chapter; the procedure is limen's `skills/contribute`.
 - **Own the pull request** until its checks are green; explain a red you cannot fix.
 - **Request the owner's review only then** — green, ready, and not stacked on an
   unmerged branch. The request is sent once; withdraw it if the pull request turns red.
+  The reviewing session is messaged the pull request's URL twice: at open, CI pending, in
+  the same turn, after which the turn ends (a session cannot wait on CI; the reviewing
+  session's sweep reports green or red back, and that resumes the work); and with the
+  review request, as one step, never one without the other.
 - **Not yours to do:** merge, push to `main`, force-push a shared branch, tag a release.
 
 ## Scope
@@ -59,6 +63,13 @@ chapter; the procedure is limen's `skills/contribute`.
   place — another transport, a variable set by hand per command, a manual step for a
   recipe — carried on as if the rig worked: that hides the defect. A workaround is used
   only after the breakage is reported and the human agrees, and is named as one every time.
+- **A locked laptop is not broken tooling.** The bot's key answers only while the human's
+  session is unlocked: once the screen locks, the agent refuses to sign or authenticate. So
+  when signing or pushing fails after it worked earlier in the session, the human is away,
+  not the rig broken. No retry loop, no workaround: finish the work in the worktree — done,
+  `just lint` and `just test` green, the commit message written — ready to commit and push
+  when the human is back, and say so once. Signing that never worked in the session is
+  broken tooling (above).
 
 ## Communication
 
@@ -72,6 +83,8 @@ chapter; the procedure is limen's `skills/contribute`.
   came about.
 - **Lead with the answer.** Short sentences; no preamble; no narration of your own
   reasoning.
+- **A message from another session that needs nothing gets no reply.** Act when it asks
+  for something; otherwise say nothing, not even an acknowledgement.
 - **No GitHub issues unless the human asks for one.** The issue tracker is the human's.
   A defect or a request that belongs to another repository goes to the session that owns
   that repository, as a message with what, why, and where; that session fixes it, and
@@ -82,6 +95,14 @@ chapter; the procedure is limen's `skills/contribute`.
 
 - **Pinned means by digest.** Every image, action, and tool — in code, examples, and
   documentation alike, because examples are what gets copied.
+- **A linter finding is judged, not obeyed.** Fix it when the fix makes the code better;
+  when it does not, silence it inline, by its rule, saying why the code is right as it is.
+  Never restructure working code only to get under a linter: a split, a rename, a
+  constant earns its place on its own. A rule wrong for a whole class of code is raised
+  with limen for the baseline, or settled in the project's overlay, with the evidence —
+  and decided before anything is silenced, since an exemption added later leaves every
+  inline silence dead. See the book's
+  [judging a finding](https://github.com/farcloser/limen/blob/main/book/per-language.md#go--judging-a-finding).
 - **A linter finding is silenced by its rule, never by its linter:**
   `//revive:disable-next-line:<rule>`, `// #nosec G### -- reason`,
   `//nolint:staticcheck // SA####: reason`. Never `//nolint:revive`, `//nolint:gosec`, a
@@ -105,3 +126,10 @@ chapter; the procedure is limen's `skills/contribute`.
   get wrong at that spot; never provenance, versions, or what the code visibly does. The
   reasoning goes in the commit message. See the book's
   [generic principles](https://github.com/farcloser/limen/blob/main/book/index.md#generic-principles).
+- **A `replace` directive is never committed**, nor anything that permits one (a
+  `gomoddirectives` `replace-local` or `replace-allow-list`). A local replace is a
+  temporary tool for working on two modules in parallel, on your machine, and stays there.
+  What ships requires a published version: a tag, or, when the change you need is not
+  tagged yet, the commit that carries it (a pseudo-version), once it is on the owner's
+  default branch. See the book's
+  [no replace, ever](https://github.com/farcloser/limen/blob/main/book/per-language.md#go--no-replace-ever).

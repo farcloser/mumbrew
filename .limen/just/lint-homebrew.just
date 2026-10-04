@@ -1,6 +1,6 @@
 # DO NOT EDIT MANUALLY.
 # This file provides shared tasks common to all projects and managed by limen.
-# Project recipes live in the root Justfile, below the shared-baseline import.
+# Project recipes live in the root .justfile, below the shared-baseline import.
 
 set working-directory := '../..'
 
@@ -27,20 +27,23 @@ style: (_banner "lint homebrew" "style")
     # Same enumeration as `lint just`, modern tap layout ONLY (Formula/ with
     # shards, Casks/): a formula in a legacy location is invisible here.
     # Discovery runs before the brew lookup, so a repo without formulas passes
-    # brew-less.
+    # brew-less. The list goes through a file (see lint.just's `just` recipe).
+    list=$(mktemp "${TMPDIR:-/tmp}/lint-homebrew.XXXXXX")
+    trap 'rm -f "$list"' EXIT
+    git ls-files -z --cached --others --exclude-standard \
+        'Formula/*.rb' 'Formula/**/*.rb' 'Casks/*.rb' 'Casks/**/*.rb' > "$list"
     files=()
     while IFS= read -r -d '' f; do
         # Tracked-but-deleted files are skipped (see lint.just's `just` recipe).
         [ -f "$f" ] || continue
         files+=("$f")
-    done < <(git ls-files -z --cached --others --exclude-standard \
-        'Formula/*.rb' 'Formula/**/*.rb' 'Casks/*.rb' 'Casks/**/*.rb')
+    done < "$list"
     if [ "${#files[@]}" -eq 0 ]; then
         echo "no formulas or casks (Formula/, Casks/) — nothing to lint."
         exit 0
     fi
     {{ _require_brew }}
-    # shellcheck disable=SC2154 # BREW_BIN is exported by the canonical Justfile (main.just).
+    # shellcheck disable=SC2154 # BREW_BIN is exported by the canonical .justfile (main.just).
     "$BREW_BIN" style "${files[@]}"
 
 # brew addresses formulas by TAP NAME, never by path: the project declares its
@@ -51,12 +54,17 @@ audit: (_banner "lint homebrew" "audit")
     #!/usr/bin/env bash
     set -euo pipefail
     {{ _skip_unless_macos }}
-    # Same vacuous pass as `style`.
+    # Same vacuous pass as `style`, through a file. Removed as soon as read:
+    # the tap cleanup below takes over the EXIT trap.
+    list=$(mktemp "${TMPDIR:-/tmp}/lint-homebrew.XXXXXX")
+    trap 'rm -f "$list"' EXIT
+    git ls-files -z --cached --others --exclude-standard \
+        'Formula/*.rb' 'Formula/**/*.rb' 'Casks/*.rb' 'Casks/**/*.rb' > "$list"
     present=""
     while IFS= read -r -d '' f; do
         [ -f "$f" ] && present=1 && break
-    done < <(git ls-files -z --cached --others --exclude-standard \
-        'Formula/*.rb' 'Formula/**/*.rb' 'Casks/*.rb' 'Casks/**/*.rb')
+    done < "$list"
+    rm -f "$list"
     if [ -z "$present" ]; then
         echo "no formulas or casks (Formula/, Casks/) — nothing to audit."
         exit 0
@@ -67,12 +75,12 @@ audit: (_banner "lint homebrew" "audit")
         */*) ;;
         *)
             echo "LINT_HOMEBREW_TAP is not set (or not 'user/name') — brew audit addresses formulas" >&2
-            echo "by tap name, not by path. Export it in the root Justfile, e.g.:" >&2
+            echo "by tap name, not by path. Export it in the root .justfile, e.g.:" >&2
             echo "  export LINT_HOMEBREW_TAP := 'farcloser/tap'" >&2
             exit 1
             ;;
     esac
-    # shellcheck disable=SC2154 # BREW_BIN is exported by the canonical Justfile (main.just).
+    # shellcheck disable=SC2154 # BREW_BIN is exported by the canonical .justfile (main.just).
     link="$("$BREW_BIN" --repository)/Library/Taps/${tap%%/*}/homebrew-${tap##*/}"
     created=""
     if [ -e "$link" ] || [ -L "$link" ]; then

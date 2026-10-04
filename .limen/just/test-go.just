@@ -1,6 +1,6 @@
 # DO NOT EDIT MANUALLY.
 # This file provides shared tasks common to all projects and managed by limen.
-# Project recipes live in the root Justfile, below the shared-baseline import.
+# Project recipes live in the root .justfile, below the shared-baseline import.
 
 set working-directory := '../..'
 
@@ -14,7 +14,7 @@ default: unit
 
 # `go test` runs through gotestsum (same exit semantics; GOTESTSUM_FORMAT picks
 # the output). -count=1 defeats the result cache. TEST_GO_TIMEOUT overrides the
-# timeout from the root Justfile.
+# timeout from the root .justfile.
 #
 # A PASSING test's output is hidden twice over (go test drops it without -v;
 # gotestsum's default format hides it), so debug prints look like they never
@@ -115,7 +115,7 @@ fuzz: (_banner "test go" "fuzz")
 
 # Coverage: per-function summary, an HTML report under build/coverage/, and an
 # optional minimum gate — export TEST_GO_COVER_MIN := '80' (integer percent)
-# from the root Justfile to enforce a floor; unset or 0 reports without gating.
+# from the root .justfile to enforce a floor; unset or 0 reports without gating.
 cover: (_banner "test go" "cover")
     #!/usr/bin/env bash
     set -euo pipefail

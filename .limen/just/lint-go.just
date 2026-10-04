@@ -1,6 +1,6 @@
 # DO NOT EDIT MANUALLY.
 # This file provides shared tasks common to all projects and managed by limen.
-# Project recipes live in the root Justfile, below the shared-baseline import.
+# Project recipes live in the root .justfile, below the shared-baseline import.
 
 set working-directory := '../..'
 
@@ -56,19 +56,23 @@ _suppression-check:
         '//nolint(:all)?([^a-z:]|$)'
     # A revive directive naming a rule the rendered configuration turns off
     # silences nothing, and nolintlint does not read revive's syntax: this is
-    # the only place a stale one is ever reported.
+    # the only place a stale one is ever reported. The lists come through a
+    # capture and a here-string, never a process substitution (see lint.just's
+    # `just` recipe), which also stops a failing query from passing silently.
+    disabled=$(${LIMEN_LINT_GO_BIN:-limen-lint-go} disabled revive)
     while IFS= read -r rule; do
         [ -n "$rule" ] || continue
         ban "revive's ${rule} is off in the baseline: this directive silences nothing — remove it (or move the finding to the linter that owns the check now)" \
             "//revive:(disable|enable)[a-z-]*:${rule}([^a-z-]|$)"
-    done < <(${LIMEN_LINT_GO_BIN:-limen-lint-go} disabled revive)
+    done <<< "$disabled"
     # Same for a //nolint naming a linter the configuration turns off:
     # nolintlint judges a directive only for a linter that runs.
+    disabled=$(${LIMEN_LINT_GO_BIN:-limen-lint-go} disabled linters)
     while IFS= read -r linter; do
         [ -n "$linter" ] || continue
         ban "${linter} is off in the configuration: naming it in //nolint silences nothing — remove it from the directive" \
             "//nolint:([a-z0-9_]+,)*${linter}([^a-z0-9_]|$)"
-    done < <(${LIMEN_LINT_GO_BIN:-limen-lint-go} disabled linters)
+    done <<< "$disabled"
     # The baseline exempts _test.go from gosec, and nolintlint never reads
     # gosec's own directive: a #nosec in a test file silences nothing. Tied
     # to that exclusion: drop this if the baseline ever lints tests with gosec.

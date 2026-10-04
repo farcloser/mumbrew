@@ -59,3 +59,6 @@ AUDIT.md
 # --- this project's own ---
 # Anything prefixed with an underscore is local scratch.
 _*
+
+# Required by limen (book/mandatory-files.md, ".gitignore").
+.claude

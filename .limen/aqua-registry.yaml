@@ -52,13 +52,15 @@ packages:
   # argv[0], so each applet links to it and a bare `sort`, `date` or `mktemp`
   # on the hermetic PATH is the pin on every platform — the same coreutils on
   # macOS as on Linux, not BSD here and GNU there. The list is the multicall
-  # binary's own (`coreutils --list`, `[` excluded); a name the Windows build
-  # lacks links to a proxy nothing on Windows calls. Carried locally until the
-  # names land upstream; when upstream's asset naming changes, this copy needs
-  # the same edit. Upstream publishes no checksum file and no provenance:
-  # verify each asset against GitHub's release attestation at every bump
-  # (`gh release verify-asset <tag> <asset> -R uutils/coreutils`), which aqua
-  # cannot check itself.
+  # binary's own (`coreutils --list`, `[` excluded). Not on Windows: the build
+  # there is a native program inside git-bash, so every path it prints is a
+  # Windows path the MSYS2 tools beside it misread (`mktemp -d` handed to tar
+  # fails to open) — Windows gets git-for-windows/git below instead. Carried
+  # locally until the names land upstream; when upstream's asset naming
+  # changes, this copy needs the same edit. Upstream publishes no checksum file
+  # and no provenance: verify each asset against GitHub's release attestation
+  # at every bump (`gh release verify-asset <tag> <asset> -R uutils/coreutils`),
+  # which aqua cannot check itself.
   - type: github_release
     repo_owner: uutils
     repo_name: coreutils
@@ -70,10 +72,6 @@ packages:
       arm64: aarch64
       darwin: apple-darwin
       linux: unknown-linux-musl
-      windows: pc-windows-msvc
-    overrides:
-      - goos: windows
-        format: zip
     files:
       - name: coreutils
         src: coreutils-{{.Version}}-{{.Arch}}-{{.OS}}/coreutils
@@ -292,6 +290,238 @@ packages:
     supported_envs:
       - darwin/arm64
       - linux
+  # Git for Windows' GNU coreutils, the Windows counterpart of the entry above,
+  # under the same names uutils provides elsewhere (all but `more` and
+  # `uptime`, which it does not ship): MSYS2 programs like the git-bash the
+  # recipes run in, so a path one prints is a path the next reads. Never
+  # `bash`, `sh` or `cygpath`: the Actions runner resolves `shell: bash` by
+  # PATH, finds the aqua link as `bash.EXE`, and aqua-proxy, matching `.exe`
+  # case-sensitively, asks aqua for `bash.EXE`, which then finds the proxy
+  # again on PATH — an unbounded recursion. The shell stays the runner's
+  # git-bash.
+  # Linked straight to usr/bin, never through bin/bash.exe, whose PATH
+  # prepending would let Git's own curl shadow the pin. The runtime is x86_64
+  # even in the arm64 tarball. The release tag is vX.Y.Z.windows.N, the asset
+  # name carries X.Y.Z only. Upstream lists each asset's SHA-256 in the release
+  # notes: check the recorded checksums against that table at every bump.
+  - type: github_release
+    repo_owner: git-for-windows
+    repo_name: git
+    description: Git for Windows, for its MSYS2 GNU coreutils
+    asset: Git-{{ regexReplaceAll "\\.windows\\.[0-9]+$" (trimV .Version) "" }}-{{.Arch}}.tar.bz2
+    format: tar.bz2
+    replacements:
+      amd64: 64-bit
+    files:
+      - name: arch
+        src: usr/bin/arch.exe
+      - name: b2sum
+        src: usr/bin/b2sum.exe
+      - name: base32
+        src: usr/bin/base32.exe
+      - name: base64
+        src: usr/bin/base64.exe
+      - name: basename
+        src: usr/bin/basename.exe
+      - name: basenc
+        src: usr/bin/basenc.exe
+      - name: cat
+        src: usr/bin/cat.exe
+      - name: chgrp
+        src: usr/bin/chgrp.exe
+      - name: chmod
+        src: usr/bin/chmod.exe
+      - name: chown
+        src: usr/bin/chown.exe
+      - name: chroot
+        src: usr/bin/chroot.exe
+      - name: cksum
+        src: usr/bin/cksum.exe
+      - name: comm
+        src: usr/bin/comm.exe
+      - name: cp
+        src: usr/bin/cp.exe
+      - name: csplit
+        src: usr/bin/csplit.exe
+      - name: cut
+        src: usr/bin/cut.exe
+      - name: date
+        src: usr/bin/date.exe
+      - name: dd
+        src: usr/bin/dd.exe
+      - name: df
+        src: usr/bin/df.exe
+      - name: dir
+        src: usr/bin/dir.exe
+      - name: dircolors
+        src: usr/bin/dircolors.exe
+      - name: dirname
+        src: usr/bin/dirname.exe
+      - name: du
+        src: usr/bin/du.exe
+      - name: echo
+        src: usr/bin/echo.exe
+      - name: env
+        src: usr/bin/env.exe
+      - name: expand
+        src: usr/bin/expand.exe
+      - name: expr
+        src: usr/bin/expr.exe
+      - name: factor
+        src: usr/bin/factor.exe
+      - name: false
+        src: usr/bin/false.exe
+      - name: fmt
+        src: usr/bin/fmt.exe
+      - name: fold
+        src: usr/bin/fold.exe
+      - name: groups
+        src: usr/bin/groups.exe
+      - name: head
+        src: usr/bin/head.exe
+      - name: hostid
+        src: usr/bin/hostid.exe
+      - name: hostname
+        src: usr/bin/hostname.exe
+      - name: id
+        src: usr/bin/id.exe
+      - name: install
+        src: usr/bin/install.exe
+      - name: join
+        src: usr/bin/join.exe
+      - name: kill
+        src: usr/bin/kill.exe
+      - name: link
+        src: usr/bin/link.exe
+      - name: ln
+        src: usr/bin/ln.exe
+      - name: logname
+        src: usr/bin/logname.exe
+      - name: ls
+        src: usr/bin/ls.exe
+      - name: md5sum
+        src: usr/bin/md5sum.exe
+      - name: mkdir
+        src: usr/bin/mkdir.exe
+      - name: mkfifo
+        src: usr/bin/mkfifo.exe
+      - name: mknod
+        src: usr/bin/mknod.exe
+      - name: mktemp
+        src: usr/bin/mktemp.exe
+      - name: mv
+        src: usr/bin/mv.exe
+      - name: nice
+        src: usr/bin/nice.exe
+      - name: nl
+        src: usr/bin/nl.exe
+      - name: nohup
+        src: usr/bin/nohup.exe
+      - name: nproc
+        src: usr/bin/nproc.exe
+      - name: numfmt
+        src: usr/bin/numfmt.exe
+      - name: od
+        src: usr/bin/od.exe
+      - name: paste
+        src: usr/bin/paste.exe
+      - name: pathchk
+        src: usr/bin/pathchk.exe
+      - name: pinky
+        src: usr/bin/pinky.exe
+      - name: pr
+        src: usr/bin/pr.exe
+      - name: printenv
+        src: usr/bin/printenv.exe
+      - name: printf
+        src: usr/bin/printf.exe
+      - name: ptx
+        src: usr/bin/ptx.exe
+      - name: pwd
+        src: usr/bin/pwd.exe
+      - name: readlink
+        src: usr/bin/readlink.exe
+      - name: realpath
+        src: usr/bin/realpath.exe
+      - name: rm
+        src: usr/bin/rm.exe
+      - name: rmdir
+        src: usr/bin/rmdir.exe
+      - name: seq
+        src: usr/bin/seq.exe
+      - name: sha1sum
+        src: usr/bin/sha1sum.exe
+      - name: sha224sum
+        src: usr/bin/sha224sum.exe
+      - name: sha256sum
+        src: usr/bin/sha256sum.exe
+      - name: sha384sum
+        src: usr/bin/sha384sum.exe
+      - name: sha512sum
+        src: usr/bin/sha512sum.exe
+      - name: shred
+        src: usr/bin/shred.exe
+      - name: shuf
+        src: usr/bin/shuf.exe
+      - name: sleep
+        src: usr/bin/sleep.exe
+      - name: sort
+        src: usr/bin/sort.exe
+      - name: split
+        src: usr/bin/split.exe
+      - name: stat
+        src: usr/bin/stat.exe
+      - name: stdbuf
+        src: usr/bin/stdbuf.exe
+      - name: stty
+        src: usr/bin/stty.exe
+      - name: sum
+        src: usr/bin/sum.exe
+      - name: sync
+        src: usr/bin/sync.exe
+      - name: tac
+        src: usr/bin/tac.exe
+      - name: tail
+        src: usr/bin/tail.exe
+      - name: tee
+        src: usr/bin/tee.exe
+      - name: test
+        src: usr/bin/test.exe
+      - name: timeout
+        src: usr/bin/timeout.exe
+      - name: touch
+        src: usr/bin/touch.exe
+      - name: tr
+        src: usr/bin/tr.exe
+      - name: true
+        src: usr/bin/true.exe
+      - name: truncate
+        src: usr/bin/truncate.exe
+      - name: tsort
+        src: usr/bin/tsort.exe
+      - name: tty
+        src: usr/bin/tty.exe
+      - name: uname
+        src: usr/bin/uname.exe
+      - name: unexpand
+        src: usr/bin/unexpand.exe
+      - name: uniq
+        src: usr/bin/uniq.exe
+      - name: unlink
+        src: usr/bin/unlink.exe
+      - name: users
+        src: usr/bin/users.exe
+      - name: vdir
+        src: usr/bin/vdir.exe
+      - name: wc
+        src: usr/bin/wc.exe
+      - name: who
+        src: usr/bin/who.exe
+      - name: whoami
+        src: usr/bin/whoami.exe
+      - name: yes
+        src: usr/bin/yes.exe
+    supported_envs:
       - windows
   # Quint (quint.sh): executable formal specifications, the model language of
   # the spec-driven testing experiment (traces in ITF, replayed against the

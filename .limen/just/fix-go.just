@@ -1,6 +1,6 @@
 # DO NOT EDIT MANUALLY.
 # This file provides shared tasks common to all projects and managed by limen.
-# Project recipes live in the root Justfile, below the shared-baseline import.
+# Project recipes live in the root .justfile, below the shared-baseline import.
 
 set working-directory := '../..'
 
