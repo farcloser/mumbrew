@@ -17,35 +17,11 @@ registries:
     path: ../.limen/aqua-registry.yaml
 
 packages:
-  # Every pin is the one-line name@version form and stays so (limen fix
-  # collapses a two-line `version:` pin): `aqua update` rewrites only that form
-  # and treats a separate `version:` key as hand-held, and Renovate reads only
-  # that form.
-  # No Go-built tool is pinned here: every one is a `tool` directive in
-  # tools/go.mod, built by the pinned go (book/tooling.md, "Go-built tools
-  # are go.mod tools"). aqua's go_install would build it once per tool
-  # version, with whichever go ran first, and share that binary.
-  # --- farcloser tools (local registry; standard once registered upstream) ---
+  # The limen this repository runs, and with it every canonical file it
+  # writes: the one canonical pin kept here, where Renovate bumps it.
   - name: farcloser/limen@v0.7.2 # renovate: depName=farcloser/limen
     registry: local
-  # sha256sum and base64 under their bare names; the registry entry says how
-  # it is verified.
-  - name: uutils/coreutils@0.12.0
-    registry: local
-  # --- toolchain + binary-release tools (standard registry, aqua-verified) ---
-  - name: golang/go@go1.27.1
-  - name: casey/just@1.58.0
-  - name: koalaman/shellcheck@v0.11.0
-  - name: google/yamlfmt@v0.21.0
-  - name: lycheeverse/lychee@lychee-v0.24.2
-  - name: goreleaser/goreleaser@v2.18.2
-  - name: sigstore/cosign@v3.1.3
-  - name: gotestyourself/gotestsum@v1.13.0
-  - name: jqlang/jq@jq-1.8.2
-  - name: cli/cli@v2.101.0
-  # --- spec tooling (local registry; see .limen/aqua-registry.yaml) ---
-  - name: quint-co/quint@v0.32.0 # renovate: depName=quint-co/quint
-    registry: local
-  - name: forkcloser/curl@v8.21.0
-    registry: local
+  # Every other tool limen requires comes from the import, at the versions
+  # this limen pins: a limen bump changes that file, never this list
+  # (book/tooling.md).
   - import: ../.limen/aqua.yaml

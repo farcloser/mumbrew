@@ -21,31 +21,6 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/cli/cli/v2.101.0/gh_2.101.0_linux_amd64.tar.gz",
-      "checksum": "9BCA2D1C16825F109907A23307628A2F0698FBF99662B73A5CF0B020293072B8",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/cli/cli/v2.101.0/gh_2.101.0_linux_arm64.tar.gz",
-      "checksum": "B57E8063F18862647C9D22727C32E9DA1B963F8BF9DB648FE123A6975695640F",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/cli/cli/v2.101.0/gh_2.101.0_macOS_arm64.zip",
-      "checksum": "E4303E39D8F07141C4BAD4B99B01079F05029C59B27076E8FBC825C985ECDD8B",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/cli/cli/v2.101.0/gh_2.101.0_windows_amd64.zip",
-      "checksum": "BC6C814367B193CD8E713611D61E36013C0EF843B8F516458FE3EDA039192794",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/cli/cli/v2.101.0/gh_2.101.0_windows_arm64.zip",
-      "checksum": "E6CBB2D4AFDAD3E70F3D38B8D1EBAA3A0870A897CFC0E4CF569826710B96B4FD",
-      "algorithm": "sha256"
-    },
-    {
       "id": "github_release/github.com/cli/cli/v2.102.0/gh_2.102.0_linux_amd64.tar.gz",
       "checksum": "BB766F710EEF8EDE859C18578C72C327597CD4C8A85B06001B1F3843C6019386",
       "algorithm": "sha256"
@@ -263,26 +238,6 @@
     {
       "id": "github_release/github.com/lycheeverse/lychee/lychee-v0.24.2/lychee-x86_64-unknown-linux-musl.tar.gz",
       "checksum": "73657A111819A30C47C08352896796F23D64E4EB2B3ED39B6D32149241566FC5",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/quint-co/quint/v0.32.0/quint-linux-amd64",
-      "checksum": "939B64095B706017F2F202C6F99C860C40BE7C31BDDC2B98557316E50F42CD7F",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/quint-co/quint/v0.32.0/quint-linux-arm64",
-      "checksum": "5B23E6F7E6F6B9C870C5EA7D38675E8FC709F4578BCF4A236918414157267A35",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/quint-co/quint/v0.32.0/quint-macos-arm64",
-      "checksum": "EB038B5E47D9839977053097830EEA386F42081780CA7E6A9B6B4FF5F3DE131F",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/quint-co/quint/v0.32.0/quint-pc-amd64.exe",
-      "checksum": "A5197EC8CCFDE5B5AD40F5C62FA7D4CBA2A01D1AFFE1A93B72D41B2385AFF7AC",
       "algorithm": "sha256"
     },
     {
