@@ -12,9 +12,14 @@ albeit much simpler and also quite dumber.
 Install with brew:
 
 ```bash
+brew tap farcloser/brews
+brew trust farcloser/brews
 brew install farcloser/brews/mumbrew
 brew services start mumbrew
 ```
+
+Trusting the tap covers both mumbrew and the tap's own build of
+terminal-notifier, which mumbrew depends on.
 
 ## Configure
 
