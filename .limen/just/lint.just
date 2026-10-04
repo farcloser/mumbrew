@@ -1,6 +1,6 @@
 # DO NOT EDIT MANUALLY.
 # This file provides shared tasks common to all projects and managed by limen.
-# Project recipes live in the root Justfile, below the shared-baseline import.
+# Project recipes live in the root .justfile, below the shared-baseline import.
 
 set working-directory := '../..'
 
@@ -39,11 +39,19 @@ just: (_banner "lint" "just")
     # files. The index half also lists files deleted but unstaged, hence the
     # existence check. Literal names need their '**/' twins: git pathspec
     # literals do not match across directories.
+    # The list goes through a file, never a process substitution: on the
+    # windows-11-arm runners, bash runs emulated, and a `< <(...)` whose child
+    # runs a program intermittently crashes it mid-recipe — exit 4 or 127, no
+    # output. A pipeline does not. Same in every shared recipe
+    # (design/WINDOWS-ARM-EXIT-4.md).
+    list=$(mktemp "${TMPDIR:-/tmp}/lint-just.XXXXXX")
+    trap 'rm -f "$list"' EXIT
+    git ls-files -z --cached --others --exclude-standard \
+        'justfile' '**/justfile' 'Justfile' '**/Justfile' '.justfile' '**/.justfile' '*.just' > "$list"
     while IFS= read -r -d '' f; do
         [ -f "$f" ] || continue
         just --fmt --check --justfile "$f"
-    done < <(git ls-files -z --cached --others --exclude-standard \
-        'justfile' '**/justfile' 'Justfile' '**/Justfile' '.justfile' '**/.justfile' '*.just')
+    done < "$list"
 
 # godolint — hadolint as pure Go (https://github.com/farcloser/godolint) —
 # over every Dockerfile in the repository; passes vacuously when there are
@@ -53,21 +61,20 @@ just: (_banner "lint" "just")
 dockerfile: (_banner "lint" "dockerfile") (_go-tool "godolint" "github.com/farcloser/godolint/cmd/godolint")
     #!/usr/bin/env bash
     set -euo pipefail
-    # Twice on windows-11-arm this body exited 4 within a second of starting,
-    # before any tool ran, with no output; the trap makes the next one say
-    # which line, since a silent exit cannot be diagnosed from a log.
-    trap 'echo "lint dockerfile: line $LINENO exited $?" >&2' ERR
-    # Same enumeration as `lint just`, over both Dockerfile and Containerfile
-    # spellings. '*.Dockerfile' needs no '**/' twin: a wildcard already matches
-    # across directories.
+    # Same enumeration as `lint just` (through a file, see there), over both
+    # Dockerfile and Containerfile spellings. '*.Dockerfile' needs no '**/'
+    # twin: a wildcard already matches across directories.
+    list=$(mktemp "${TMPDIR:-/tmp}/lint-dockerfile.XXXXXX")
+    trap 'rm -f "$list"' EXIT
+    git ls-files -z --cached --others --exclude-standard \
+        'Dockerfile' '**/Dockerfile' 'Dockerfile.*' '**/Dockerfile.*' '*.Dockerfile' \
+        'Containerfile' '**/Containerfile' 'Containerfile.*' '**/Containerfile.*' '*.Containerfile' > "$list"
     files=()
     while IFS= read -r -d '' f; do
         # Tracked-but-deleted files are skipped (see `lint just`).
         [ -f "$f" ] || continue
         files+=("$f")
-    done < <(git ls-files -z --cached --others --exclude-standard \
-        'Dockerfile' '**/Dockerfile' 'Dockerfile.*' '**/Dockerfile.*' '*.Dockerfile' \
-        'Containerfile' '**/Containerfile' 'Containerfile.*' '**/Containerfile.*' '*.Containerfile')
+    done < "$list"
     # godolint runs shellcheck on RUN lines when it finds one on PATH — the
     # pinned one, here.
     [ ${#files[@]} -eq 0 ] || build/tools/godolint "${files[@]}"
@@ -88,8 +95,15 @@ shell: (_banner "lint" "shell")
     # of milliseconds, and a head and a grep per file made this recipe six
     # times slower on windows than on linux. The loop below is builtins only,
     # and one awk per hundred candidates (windows caps a command line at 32K)
-    # reads their first lines. No \b in awk regexes — the word boundary is
-    # spelled out.
+    # reads their first lines, in the C locale: the candidates include binaries,
+    # and macOS awk in a UTF-8 locale dies on their first bytes ("towc:
+    # multibyte conversion failure"). No \b in awk regexes — the word boundary
+    # is spelled out. Every list goes through a file in the scratch directory
+    # (see `lint just`), under a dot-name no recipe body below can take.
+    # mktemp gets an explicit template: macOS ignores $TMPDIR.
+    tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/lint-shell.XXXXXX")
+    trap 'rm -rf "$tmpdir"' EXIT
+    git ls-files -z --cached --others --exclude-standard > "$tmpdir/.files"
     files=()
     candidates=()
     while IFS= read -r -d '' f; do
@@ -99,26 +113,22 @@ shell: (_banner "lint" "shell")
             *.sh|*.bash) files+=("$f"); continue ;;
         esac
         candidates+=("$f")
-    done < <(git ls-files -z --cached --others --exclude-standard)
-    while IFS= read -r -d '' f; do files+=("$f"); done < <(
-        for ((i = 0; i < ${#candidates[@]}; i += 100)); do
-            awk '
-                FNR == 1 {
-                    # %c with 0, not "\0" in the format: a NUL inside an awk
-                    # string ends it, and the names would run together unterminated.
-                    if ($0 ~ /^#!.*[^[:alnum:]_](bash|dash|ksh|sh)([^[:alnum:]_]|$)/) printf "%s%c", FILENAME, 0
-                    nextfile
-                }' "${candidates[@]:i:100}"
-        done
-    )
+    done < "$tmpdir/.files"
+    for ((i = 0; i < ${#candidates[@]}; i += 100)); do
+        LC_ALL=C awk '
+            FNR == 1 {
+                # %c with 0, not "\0" in the format: a NUL inside an awk
+                # string ends it, and the names would run together unterminated.
+                if ($0 ~ /^#!.*[^[:alnum:]_](bash|dash|ksh|sh)([^[:alnum:]_]|$)/) printf "%s%c", FILENAME, 0
+                nextfile
+            }' "${candidates[@]:i:100}"
+    done > "$tmpdir/.shebang"
+    while IFS= read -r -d '' f; do files+=("$f"); done < "$tmpdir/.shebang"
     [ ${#files[@]} -eq 0 ] || shellcheck --rcfile .limen/.shellcheckrc "${files[@]}"
     # Shebang recipes inside justfiles are shell scripts too: extract each body
     # from the JSON dump and shellcheck it. Interpolations (just syntax, not
     # shell) are masked as INTERP. One dump of the root justfile covers imports
-    # and every nested `mod`. mktemp gets an explicit template: macOS ignores
-    # $TMPDIR.
-    tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/lint-shell.XXXXXX")
-    trap 'rm -rf "$tmpdir"' EXIT
+    # and every nested `mod`.
     recipes=()
     dump=$(just --dump --dump-format json)
     # jq keeps the shebang recipes and emits each as a record — name, body,
@@ -132,8 +142,7 @@ shell: (_banner "lint" "shell")
     # name is only a label, so module separators are flattened. The directory
     # reaches awk through ENVIRON, never -v: -v processes escapes, and a
     # windows temp path's backslashes are eaten (\l becomes l).
-    while IFS= read -r name; do recipes+=("$tmpdir/$name"); done < <(
-        printf '%s' "$dump" | jq -r '
+    printf '%s' "$dump" | jq -r '
             def recipes_of(prefix):
                 ((.recipes // {}) | to_entries[]
                     | (.value.body
@@ -154,8 +163,8 @@ shell: (_banner "lint" "shell")
                 printf "%s", substr($0, n + 1) > out
                 close(out)
                 print name
-            }'
-    )
+            }' > "$tmpdir/.recipes"
+    while IFS= read -r name; do recipes+=("$tmpdir/$name"); done < "$tmpdir/.recipes"
     # SC1010 is excluded for recipe bodies only: `just do <task>` is our shared
     # namespace, and shellcheck misreads the argument "do" as the shell keyword.
     # The constant-word checks (SC2050/SC2078/SC2157/SC2194) are excluded for
@@ -212,14 +221,6 @@ links: (_banner "lint" "links")
 commits range="": (_banner "lint" "commits") (_go-tool "git-validation" "github.com/vbatts/git-validation")
     #!/usr/bin/env bash
     set -euo pipefail
-    # .allowed_signers arms signature DISPLAY for humans; none of the rules
-    # below verify signatures. Best-effort: a sandboxed session may
-    # write-protect .git/config, and that must not fail the lint.
-    if [ -f .allowed_signers ]; then
-        git config --unset-all gpg.ssh.allowedSignersFile 2>/dev/null || true
-        git config --add gpg.ssh.allowedSignersFile .allowed_signers 2>/dev/null ||
-            echo "note: .git/config not writable; signature display not armed" >&2
-    fi
     range="{{ range }}"
     if [ -z "$range" ] && [ -n "${GITHUB_BASE_REF:-}" ]; then
         # GitHub Actions pull request: validate against the PR's actual base
@@ -247,8 +248,39 @@ commits range="": (_banner "lint" "commits") (_go-tool "git-validation" "github.
     else
         build/tools/git-validation -run DCO,short-subject,dangling-whitespace
     fi
+    # .lint-signers lists everyone who authors here, email and key, in git's
+    # allowed-signers format: every commit in the range must be signed by a
+    # key it lists for the committer (%G? is G). Not a security boundary,
+    # since a pull request can edit the file: a forcing function, so an author
+    # lists themselves. Skipped: merges, which author nothing (GitHub makes
+    # the pull request checkout's and the update-branch button's), and a
+    # GitHub App's commits (Renovate, the checksum-update App), authored by
+    # the bot and committed by GitHub. A human's commit that GitHub made, a
+    # web-UI edit, fails. The file is passed per command: nothing is written
+    # to .git/config. Without a range (no upstream) there is nothing to check.
+    if [ -f .lint-signers ] && [ -n "$range" ]; then
+        commits=$(git log --no-merges --format='%H%x09%ae%x09%ce' "$range")
+        unsigned=0
+        while IFS=$'\t' read -r sha author committer; do
+            [ -n "$sha" ] || continue
+            case "$author" in
+                *'[bot]@users.noreply.github.com') [ "$committer" = noreply@github.com ] && continue ;;
+            esac
+            status=$(git -c gpg.ssh.allowedSignersFile=.lint-signers log -1 --format=%G? "$sha" 2>/dev/null || true)
+            if [ "$status" != G ]; then
+                echo "$(git log -1 --format='%h %s' "$sha"): not signed by a key .lint-signers lists for ${committer}" >&2
+                unsigned=1
+            fi
+        done <<< "$commits"
+        if [ "$unsigned" -ne 0 ]; then
+            echo "sign your commits, and list yourself in .lint-signers: <email> namespaces=\"git\" <public key>" >&2
+            exit 1
+        fi
+    elif [ ! -f .lint-signers ]; then
+        echo "warning: no .lint-signers: commit signatures are not checked — list every author, <email> namespaces=\"git\" <public key>" >&2
+    fi
 
-# Verify aqua-checksums.json is in sync with aqua.yaml — the working tree's
+# Verify .aqua/aqua-checksums.json is in sync with .aqua/aqua.yaml — the working tree's
 # pair, exactly as it stands: git state (staged, committed, neither) is
 # irrelevant to coherence. Recipes judge the working tree; git answers
 # enumeration and history questions only.
@@ -262,13 +294,13 @@ aqua: (_banner "lint" "aqua")
     tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/lint-aqua.XXXXXX")
     trap 'rm -rf "$tmpdir"' EXIT
     had=""
-    if [ -f aqua-checksums.json ]; then
-        cp aqua-checksums.json "$tmpdir/snapshot"
+    if [ -f .aqua/aqua-checksums.json ]; then
+        cp .aqua/aqua-checksums.json "$tmpdir/snapshot"
         had=1
     fi
     # Restore the working tree from the snapshot on EVERY exit — success, drift,
     # an aqua failure (set -e), or an interrupt. update-checksum mutates
-    # aqua-checksums.json in place, and a lint must never leave that behind; an
+    # .aqua/aqua-checksums.json in place, and a lint must never leave that behind; an
     # inline restore only runs on the paths it is written on, so it belongs in the
     # trap. Installed AFTER the snapshot so `had` is known — restoring before that
     # would wrongly rm a file we had not yet copied.
@@ -277,17 +309,17 @@ aqua: (_banner "lint" "aqua")
     # shellcheck disable=SC2329
     restore() {
         if [ -n "$had" ]; then
-            cp "$tmpdir/snapshot" aqua-checksums.json
+            cp "$tmpdir/snapshot" .aqua/aqua-checksums.json
         else
-            rm -f aqua-checksums.json
+            rm -f .aqua/aqua-checksums.json
         fi
         rm -rf "$tmpdir"
     }
     trap restore EXIT
     # --log-level warn: the per-package INFO lines are noise when nothing is wrong.
     aqua --log-level warn update-checksum --prune
-    if [ -n "$had" ] && cmp -s aqua-checksums.json "$tmpdir/snapshot"; then
+    if [ -n "$had" ] && cmp -s .aqua/aqua-checksums.json "$tmpdir/snapshot"; then
         exit 0
     fi
-    echo "aqua-checksums.json is out of sync with aqua.yaml — run 'just do fix aqua'." >&2
+    echo ".aqua/aqua-checksums.json is out of sync with .aqua/aqua.yaml — run 'just do fix aqua'." >&2
     exit 1

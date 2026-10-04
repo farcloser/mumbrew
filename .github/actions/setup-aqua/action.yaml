@@ -21,7 +21,7 @@ runs:
         AQUA_VERSION: v2.63.0
       run: |
         # Pin the root explicitly: aqua's Windows build defaults it to
-        # %LOCALAPPDATA%, the installer and the Justfile compute ~/.local/share,
+        # %LOCALAPPDATA%, the installer and the .justfile compute ~/.local/share,
         # and the layers must agree.
         AQUA_ROOT_DIR="${AQUA_ROOT_DIR:-$HOME/.local/share/aquaproj-aqua}"
         # Native form on windows: git-bash's POSIX $HOME (/c/Users/…) is misread
@@ -96,7 +96,7 @@ runs:
       # Before aqua will read the repo's local registry, the committed policy
       # must be allowed — every caller needs this, whatever it runs next.
       shell: bash
-      run: aqua policy allow aqua-policy.yaml
+      run: aqua policy allow .aqua/aqua-policy.yaml
     - name: Authenticate aqua's GitHub API calls
       # GITHUB_ENV so every later step's aqua and its shims see it (downloads
       # happen lazily, on first use). AQUA_GITHUB_TOKEN, not GITHUB_TOKEN: only

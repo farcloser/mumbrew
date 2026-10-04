@@ -1,6 +1,6 @@
 # DO NOT EDIT MANUALLY.
 # This file provides shared tasks common to all projects and managed by limen.
-# Project recipes live in the root Justfile, below the shared-baseline import.
+# Project recipes live in the root .justfile, below the shared-baseline import.
 
 # Reports that judge nothing: what the compiler could not eliminate, what it
 # moved to the heap, how fast a function runs, where the time goes. None of

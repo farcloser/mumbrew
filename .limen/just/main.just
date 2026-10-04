@@ -1,19 +1,19 @@
 # DO NOT EDIT MANUALLY.
 # This file provides shared tasks common to all projects and managed by limen.
-# The root Justfile is the project's own: a shim that imports this file and
+# The root .justfile is the project's own: a shim that imports this file and
 # then carries the project's recipes — everything shared lives here, so the
 # shim never has to change.
 
 # The project may redefine the shared recipes below (info, or an explicit
-# default) in its root Justfile: the later definition — the project's — wins.
+# default) in its root .justfile: the later definition — the project's — wins.
 set allow-duplicate-recipes
-# Likewise for variables: a project's root Justfile may re-export any variable
+# Likewise for variables: a project's root .justfile may re-export any variable
 # set here (notably a hermetic GO* default below) and the importing file wins —
-# so an override is explicit and tracked in the Justfile, never an ambient env
+# so an override is explicit and tracked in the .justfile, never an ambient env
 # var leaking in.
 set allow-duplicate-variables
 
-# Project name, derived from the directory the root Justfile lives in.
+# Project name, derived from the directory the root .justfile lives in.
 project := file_name(justfile_directory())
 
 # brew is captured from the ambient PATH, above the hermetic override: not
@@ -29,7 +29,7 @@ export PATH := if os() == 'windows' { aqua_bin + ';' + env_var('PATH') } else { 
 
 # GO* variables tunnel through the pinned PATH, so each is emptied or pinned
 # (go treats '' as unset; `export` propagates into module recipes, `unexport`
-# does not). A project's root Justfile may override any of them, tracked.
+# does not). A project's root .justfile may override any of them, tracked.
 #
 #   GOROOT       an inherited value (IDEs inject one, often into the module
 #                cache that `go clean -modcache` deletes) overrides where the
@@ -48,7 +48,7 @@ export PATH := if os() == 'windows' { aqua_bin + ';' + env_var('PATH') } else { 
 #                bypassed per-path.
 #   GOPROXY      pinned to the default so an ambient GOPROXY=off or a stale
 #                mirror cannot change where modules resolve from; a project
-#                needing an internal proxy sets it in its own Justfile.
+#                needing an internal proxy sets it in its own .justfile.
 #   GOOS/GOARCH  '' = native. Ambient values silently cross-compile every
 #                build/lint/test; the per-platform analysis sets GOOS/GOARCH
 #                itself where it needs to (see _per-platform in lib.just),

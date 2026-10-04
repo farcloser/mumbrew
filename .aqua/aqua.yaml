@@ -1,0 +1,27 @@
+# aqua — Declarative CLI Version Manager — https://aquaproj.github.io/
+checksum:
+  enabled: true
+  require_checksum: true
+  supported_envs:
+    - darwin/arm64
+    - linux/amd64
+    - linux/arm64
+    - windows/amd64
+    - windows/arm64
+
+registries:
+  - type: standard
+    ref: v4.567.0 # renovate: depName=aquaproj/aqua-registry
+  - name: local
+    type: local
+    path: ../.limen/aqua-registry.yaml
+
+packages:
+  # The limen this repository runs, and with it every canonical file it
+  # writes: the one canonical pin kept here, where Renovate bumps it.
+  - name: farcloser/limen@v0.7.2 # renovate: depName=farcloser/limen
+    registry: local
+  # Every other tool limen requires comes from the import, at the versions
+  # this limen pins: a limen bump changes that file, never this list
+  # (book/tooling.md).
+  - import: ../.limen/aqua.yaml
