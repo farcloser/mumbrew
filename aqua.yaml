@@ -26,7 +26,7 @@ packages:
   # are go.mod tools"). aqua's go_install would build it once per tool
   # version, with whichever go ran first, and share that binary.
   # --- farcloser tools (local registry; standard once registered upstream) ---
-  - name: farcloser/limen@v0.6.2 # renovate: depName=farcloser/limen
+  - name: farcloser/limen@v0.7.2 # renovate: depName=farcloser/limen
     registry: local
   # sha256sum and base64 under their bare names; the registry entry says how
   # it is verified.
