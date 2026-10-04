@@ -1,10 +1,12 @@
 # Mumbrew
 
+![mumbrew logo](logo.jpg)
+
 Mumbrew is very simple, easy to use auto-updater for brew.
 
 The service by default runs at 2AM, and will upgrade everything that is not pinned.
 
-This is similar in principle to https://github.com/Homebrew/homebrew-autoupdate
+This is similar in principle to https://github.com/DomT4/homebrew-autoupdate
 albeit much simpler and also quite dumber.
 
 ## Install
@@ -12,9 +14,14 @@ albeit much simpler and also quite dumber.
 Install with brew:
 
 ```bash
+brew tap farcloser/brews
+brew trust farcloser/brews
 brew install farcloser/brews/mumbrew
 brew services start mumbrew
 ```
+
+Trusting the tap covers both mumbrew and the tap's own build of
+terminal-notifier, which mumbrew depends on.
 
 ## Configure
 
