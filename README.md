@@ -1,5 +1,7 @@
 # Mumbrew
 
+![mumbrew logo](logo.jpg)
+
 Mumbrew is very simple, easy to use auto-updater for brew.
 
 The service by default runs at 2AM, and will upgrade everything that is not pinned.
