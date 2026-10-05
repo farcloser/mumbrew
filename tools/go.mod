@@ -14,7 +14,7 @@ tool (
 require (
 	github.com/containerd/typeurl/v2 v2.3.0 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
-	github.com/farcloser/godolint v0.1.0 // indirect
+	github.com/farcloser/godolint v0.2.0 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/flopp/go-findfont v0.1.0 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
