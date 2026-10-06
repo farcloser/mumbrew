@@ -2,7 +2,7 @@
 # Realign it by hand when limen's canonical moves, and comment every project
 # line so the next alignment keeps it.
 #
-# Minimal glue: GitHub's own actions pinned by SHA, aqua at aqua.yaml's pins,
+# Minimal glue: GitHub's own actions pinned by SHA, aqua at .aqua/aqua.yaml's pins,
 # `just` running the recipes a laptop runs. No third-party actions, hence no
 # egress-filtering action either.
 name: ci
@@ -53,19 +53,27 @@ jobs:
           # range against the PR's base branch, which a shallow clone lacks.
           fetch-depth: 0
 
+      # Windows keeps every cache below in one disk image, cached as a single
+      # file: restored as files, they cost minutes of small-file writes there.
+      # Before setup-aqua, which takes the AQUA_ROOT_DIR it sets; the hash is
+      # taken here because hashFiles cannot walk into the attached image.
+      - id: image
+        if: runner.os == 'Windows'
+        uses: ./.github/actions/windows-cache-image
+        with:
+          mode: attach
+          prefix: win-image-${{ runner.os }}-${{ runner.arch }}-
+          hash: ${{ hashFiles('.aqua/aqua.yaml', '.aqua/aqua-checksums.json', '.limen/aqua.yaml', '.limen/aqua-registry.yaml', '**/go.sum') }}
+
       - name: Install aqua (pinned, checksum-verified)
         uses: ./.github/actions/setup-aqua
-
-      # Not here: turning Defender's real-time scan off. Tried on the windows
-      # legs, before the caches, and measured neutral twice against the same
-      # commit without it — the slowness is process creation and small-file
-      # writes under git-bash, not the scanner.
 
       # aqua's package store, keyed on the exact pins and per architecture
       # (the store holds native binaries). A warm store turns every lazy first
       # use below into a link; the fallback key keeps the tools a pin bump did
       # not touch, and the changed one downloads and verifies as before.
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - if: runner.os != 'Windows'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.AQUA_ROOT_DIR }}/pkgs
           key: aqua-pkgs-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.aqua/aqua.yaml', '.aqua/aqua-checksums.json', '.limen/aqua-registry.yaml') }}
@@ -85,11 +93,13 @@ jobs:
       # content-addressed, the module cache is checksum-verified), so the
       # fallback key is always worth taking.
       - id: gocache
+        if: runner.os != 'Windows'
         run: |
           echo "build=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
           echo "mod=$(go env GOMODCACHE)" >> "$GITHUB_OUTPUT"
           echo "version=$(go env GOVERSION)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - if: runner.os != 'Windows'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ steps.gocache.outputs.build }}
@@ -105,6 +115,14 @@ jobs:
 
       - name: Test
         run: just test
+
+      # On a miss, the image this run filled becomes the key's; a hit needs no
+      # save, since a cache key is never overwritten.
+      - if: runner.os == 'Windows' && steps.image.outputs.cache-hit != 'true'
+        uses: ./.github/actions/windows-cache-image
+        with:
+          mode: save
+          key: ${{ steps.image.outputs.key }}
 
   # One linux leg, not the matrix: fuzzing explores the same corpus wherever
   # it runs, so more legs cost CPU and add nothing. The recipe passes on a
