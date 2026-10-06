@@ -78,6 +78,15 @@ _go-tool name pkg:
         exit 1
     fi
 
+# The Go vulnerability database, fetched once into build/vulndb by `limen
+# vulndb`, which retries (govulncheck's own client does not). Recipes depend
+# on this, then pass govulncheck `-db "$(cat build/vulndb.url)"`.
+_vulndb:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p build
+    ${LIMEN_BIN:-limen} vulndb build/vulndb > build/vulndb.url
+
 # The golangci-lint configuration the lint and fix recipes run: the baseline
 # limen-lint-go embeds with the project's .lint-go.yaml applied, rendered on
 # every run into build/ (gitignored) — so an edit to the overlay is live at

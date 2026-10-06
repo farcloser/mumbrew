@@ -13,7 +13,7 @@ import 'lib.just'
 default: vuln
 
 # Known-vulnerability scan of the module's dependency graph against the Go
-# vulnerability database (network: govulncheck fetches vuln.go.dev), once per
+# vulnerability database (fetched once, see _vulndb in lib.just), once per
 # supported platform (see _per-platform in lib.just: call paths and
 # dependencies differ by platform). Reports what the module reaches, not what
 # it merely imports: a finding is a call path to cut or a bump to take. No
@@ -29,4 +29,4 @@ vuln: (_banner "security go" "vuln")
     fi
     just do security go _vuln
 
-_vuln: (_go-tool "govulncheck" "golang.org/x/vuln/cmd/govulncheck") (_per-platform "build/tools/govulncheck ./...")
+_vuln: (_go-tool "govulncheck" "golang.org/x/vuln/cmd/govulncheck") _vulndb (_per-platform 'build/tools/govulncheck -db "$(cat build/vulndb.url)" ./...')

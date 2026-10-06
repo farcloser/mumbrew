@@ -34,5 +34,9 @@ packages:
   # --- spec tooling (local registry; see .limen/aqua-registry.yaml) ---
   - name: quint-co/quint@v0.33.0 # renovate: depName=quint-co/quint
     registry: local
-  - name: forkcloser/curl@v8.21.0
+  - name: forkcloser/curl@v8.22.0
+    registry: local
+  # darwin/arm64 only. Its `docker` link shadows the machine's Docker on the
+  # hermetic PATH there; aqua skips the package everywhere else.
+  - name: farcloser/ossein@v0.3.0
     registry: local

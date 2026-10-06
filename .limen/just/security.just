@@ -28,8 +28,8 @@ default: go::default
 # Every Go binary aqua pins carries its own copy of the standard library, built
 # by its upstream with whatever Go they used that day: a fixed net/http or
 # crypto/tls reaches us only when THEY rebuild. This scans each such binary
-# against the Go vulnerability database (network: govulncheck fetches
-# vuln.go.dev), by the symbols it links, so a known standard-library or module
+# against the Go vulnerability database (fetched once, see _vulndb in
+# lib.just), by the symbols it links, so a known standard-library or module
 # vulnerability in a pinned tool is seen the day the advisory lands, whoever
 # built it. The binaries the pinned toolchain builds here (tools/go.mod) are
 # the go vuln lane's; this one is for what we did not build. Enumerated from
@@ -41,9 +41,10 @@ default: go::default
 # vulnerabilities, aqua included, and a red no repository can clear is
 # noise. It joins the default set once the pinned tools are built here with
 # the pinned toolchain and aqua's own pin is current.
-binaries: (_banner "security" "binaries") (_go-tool "govulncheck" "golang.org/x/vuln/cmd/govulncheck")
+binaries: (_banner "security" "binaries") (_go-tool "govulncheck" "golang.org/x/vuln/cmd/govulncheck") _vulndb
     #!/usr/bin/env bash
     set -euo pipefail
+    db=$(cat build/vulndb.url)
     bin="$(aqua root-dir)/bin"
     # A newline-delimited list, not an associative array: macOS ships bash 3.
     seen=$'\n'
@@ -60,7 +61,7 @@ binaries: (_banner "security" "binaries") (_go-tool "govulncheck" "golang.org/x/
         # A darwin universal binary (goreleaser ships one) is beyond govulncheck's
         # reader; the other platforms' legs scan that tool's thin binaries, so
         # the darwin leg says so and moves on rather than failing on a format.
-        if ! out=$(build/tools/govulncheck -mode binary "$path" 2>&1); then
+        if ! out=$(build/tools/govulncheck -db "$db" -mode binary "$path" 2>&1); then
             case "$out" in
                 *"unrecognized binary format"*) echo "  skipped: universal binary, scanned on the other platforms";;
                 *) printf '%s\n' "$out"; fail=1;;

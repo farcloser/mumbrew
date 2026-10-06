@@ -21,6 +21,11 @@ project := file_name(justfile_directory())
 # homebrew recipes then refuse); override by exporting BREW_BIN.
 export BREW_BIN := env_var_or_default('BREW_BIN', `command -v brew || true`)
 
+# gpg likewise, for git to check a PGP-signed commit (GitHub signs its merge
+# and web-UI commits that way): macOS has none in the base system. Empty when
+# absent; Windows' ambient PATH already carries Git for Windows' own.
+export GPG_BIN := if os() == 'windows' { '' } else { env_var_or_default('GPG_BIN', `command -v gpg || true`) }
+
 # aqua-pinned tools + base system only, so an unpinned tool fails loudly.
 # Windows (git-bash) has no knowable base-system list and uses ';': pins are
 # prepended to the ambient PATH there instead.

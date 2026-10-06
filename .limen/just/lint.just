@@ -53,12 +53,12 @@ just: (_banner "lint" "just")
         just --fmt --check --justfile "$f"
     done < "$list"
 
-# godolint — hadolint as pure Go (https://github.com/farcloser/godolint) —
+# godolint — hadolint as pure Go (https://github.com/forkcloser/godolint) —
 # over every Dockerfile in the repository; passes vacuously when there are
 # none, so it can sit in the default set for every repo. Rule exceptions
 # belong next to the instruction they excuse, as inline
 # `# hadolint ignore=DLxxxx` pragmas — not in the recipe.
-dockerfile: (_banner "lint" "dockerfile") (_go-tool "godolint" "github.com/farcloser/godolint/cmd/godolint")
+dockerfile: (_banner "lint" "dockerfile") (_go-tool "godolint" "github.com/forkcloser/godolint/cmd/godolint")
     #!/usr/bin/env bash
     set -euo pipefail
     # Same enumeration as `lint just` (through a file, see there), over both
@@ -243,6 +243,20 @@ commits range="": (_banner "lint" "commits") (_go-tool "git-validation" "github.
             fi
         done
     fi
+    # git-validation asks git for every commit's signature status, so git
+    # verifies each signature: without the signers file and a gpg it prints
+    # an error per commit that reads like a failure. GIT_CONFIG_* hands git
+    # both without writing .git/config.
+    n=0
+    if [ -f .lint-signers ]; then
+        export GIT_CONFIG_KEY_0=gpg.ssh.allowedSignersFile GIT_CONFIG_VALUE_0=.lint-signers
+        n=1
+    fi
+    if [ -n "${GPG_BIN:-}" ]; then
+        export "GIT_CONFIG_KEY_$n=gpg.program" "GIT_CONFIG_VALUE_$n=$GPG_BIN"
+        n=$((n + 1))
+    fi
+    export GIT_CONFIG_COUNT=$n
     if [ -n "$range" ]; then
         build/tools/git-validation -run DCO,short-subject,dangling-whitespace -range "$range"
     else
