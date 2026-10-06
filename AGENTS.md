@@ -26,7 +26,9 @@ chapter; the procedure is limen's `skills/contribute`.
   branches — `work`, and anything not named after you — are the human's: never commit
   there unless pairing interactively at their request, and never on `main`.
 - **Commits** are signed as you, with a DCO sign-off as you; when the change is the
-  human's own work, the human is the author. No scratchpads (`AUDIT.md` and its kind).
+  human's own work, the human is the author. No scratchpads (`AUDIT.md` and its kind):
+  they live under `_scratch/` at the repository root, which `.gitignore` ignores, and
+  nowhere else in the tree.
 - **One commit per thing.** Different things get different commits; iteration on the
   same thing — a review round, a fix to your own commit — is squashed into the commit it
   amends before the review is requested. Never a stack of fix-ups for one change.
@@ -54,6 +56,11 @@ chapter; the procedure is limen's `skills/contribute`.
   a one-line workflow bug: on the way through. Onboarding a legacy repository, a
   wholesale cleanup of a broken one: the human decides first. Measure before moving.
 - **A red inherited from `main`** is explained on the pull request, not fixed in it.
+- **A flake is fixed when it is noticed.** A check that fails, then passes on a rerun, gets
+  its root cause and its fix at once, in a pull request of its own: by whoever noticed it,
+  or by the owning session when it is another repository's. The rerun found the flake; it
+  did not fix it. The one exception is a flake whose cause is known and whose fix was
+  declined, documented as such (windows-11-arm's silent exit 4 or 127): it is rerun, and named.
 - **Doctrine can lose the argument, never silently.** A fix that cuts against the book is
   named as such and argued; it is decided, not discovered.
 - **Broken tooling is reported, never worked around in silence.** The rig — limen, the
@@ -126,6 +133,11 @@ chapter; the procedure is limen's `skills/contribute`.
   get wrong at that spot; never provenance, versions, or what the code visibly does. The
   reasoning goes in the commit message. See the book's
   [generic principles](https://github.com/farcloser/limen/blob/main/book/index.md#generic-principles).
+- **A module's `go` directive is the earliest Go release still supported upstream**, as
+  its first version (`go 1.N.0`), or the patch a dependency requires when that is higher
+  (what `go mod tidy` raises it to); never a newer release. The tools modules
+  (`tools/go.mod`, `tools/<name>/go.mod`) are exempt. See the book's
+  [baseline version](https://github.com/farcloser/limen/blob/main/book/per-language.md#go--the-baseline-version).
 - **A `replace` directive is never committed**, nor anything that permits one (a
   `gomoddirectives` `replace-local` or `replace-allow-list`). A local replace is a
   temporary tool for working on two modules in parallel, on your machine, and stays there.

@@ -46,53 +46,58 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/farcloser/limen/v0.7.3/limen_0.7.3_darwin_arm64.tar.gz",
-      "checksum": "E69100548B8ECC30BFCD3239659D4B17D48FDA79F436854680081242ABCBAAF4",
+      "id": "github_release/github.com/farcloser/limen/v0.8.0/limen_0.8.0_darwin_arm64.tar.gz",
+      "checksum": "E73ED78C7076867ACE43D7EBC1A1254CCAE50D5992095B405CAD7F2F10787B89",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/farcloser/limen/v0.7.3/limen_0.7.3_linux_amd64.tar.gz",
-      "checksum": "C92BFA791A0CE63725F172D2796D33CC36092E5844CF73D8E2F146E8C52409EA",
+      "id": "github_release/github.com/farcloser/limen/v0.8.0/limen_0.8.0_linux_amd64.tar.gz",
+      "checksum": "63A637D15AB78CE8C1ED4CC64CBEE419E467BAADB4FF290C04228D106B0BFF22",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/farcloser/limen/v0.7.3/limen_0.7.3_linux_arm64.tar.gz",
-      "checksum": "CA1353D91BBFDE0AD4B29BBDEA945FD30E7BDFC739ABAF710FC2F8346BD99EDD",
+      "id": "github_release/github.com/farcloser/limen/v0.8.0/limen_0.8.0_linux_arm64.tar.gz",
+      "checksum": "E2D2BB0DE0D81092D2D590DAB80E71979A0EA883E5F81A3DF59F034703F4E0ED",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/farcloser/limen/v0.7.3/limen_0.7.3_windows_amd64.tar.gz",
-      "checksum": "A5C43720E9D883CCCFF257EA88AFF6CC6E400983BB76BC26EB609FBD37EDA1A4",
+      "id": "github_release/github.com/farcloser/limen/v0.8.0/limen_0.8.0_windows_amd64.tar.gz",
+      "checksum": "9FF90A269A63C6739FD1AB73FD5262BB98D36145916E0D28D3E873453BDD6D57",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/farcloser/limen/v0.7.3/limen_0.7.3_windows_arm64.tar.gz",
-      "checksum": "F4DF068E3790E236723AD8E52E6E5D58D684A989DE0EBB6452684B41600D856B",
+      "id": "github_release/github.com/farcloser/limen/v0.8.0/limen_0.8.0_windows_arm64.tar.gz",
+      "checksum": "EF61BC2AD757370C00AD313F2BBD247D7847E8C1A1F8E14FB72EBBCB19FEB12A",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/forkcloser/curl/v8.21.0/curl_8.21.0_darwin_arm64.tar.gz",
-      "checksum": "B2936D3902EC6ED96F9582C00616D2B033B5BB8EC5CB6330101D144482A56F85",
+      "id": "github_release/github.com/farcloser/ossein/v0.3.0/ossein_0.3.0_darwin_arm64.tar.gz",
+      "checksum": "3272F1D1117C2D4F2A8FD484963B0CE8979199D047D0FFA1D110838AB1C16E5F",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/forkcloser/curl/v8.21.0/curl_8.21.0_linux_amd64.tar.gz",
-      "checksum": "EC32B4B26F78F5AD98C64338DC29E67A3C61984E41A95B8792C77457D32DEF73",
+      "id": "github_release/github.com/forkcloser/curl/v8.22.0/curl_8.22.0_darwin_arm64.tar.gz",
+      "checksum": "E733869CF4FED3F5CB0F67E0AA37DD21216690D27C56525749E3F3A211227DD3",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/forkcloser/curl/v8.21.0/curl_8.21.0_linux_arm64.tar.gz",
-      "checksum": "841829B51F1F80FA05BB7382B25E0EBDD765325FA4F8B567461B4FCFB5653B5C",
+      "id": "github_release/github.com/forkcloser/curl/v8.22.0/curl_8.22.0_linux_amd64.tar.gz",
+      "checksum": "0DEE3074F44F56ADBCBB94C3DF506EC60BBFDA31DAA98FA537827C2A290A4666",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/forkcloser/curl/v8.21.0/curl_8.21.0_windows_amd64.tar.gz",
-      "checksum": "DCF632D027EC21B129D06C415C3C008D8DF241BC3516D43FC6B0327C6E35A087",
+      "id": "github_release/github.com/forkcloser/curl/v8.22.0/curl_8.22.0_linux_arm64.tar.gz",
+      "checksum": "C78C61656EC58AB22EA5107B686772811478B91BB97BAD1EADD259C990058EE0",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/forkcloser/curl/v8.21.0/curl_8.21.0_windows_arm64.tar.gz",
-      "checksum": "78EB1B53E55037111534CD2B87AD204DE04318A92C646554A78390BFB60E466F",
+      "id": "github_release/github.com/forkcloser/curl/v8.22.0/curl_8.22.0_windows_amd64.tar.gz",
+      "checksum": "9057B8D7890C58B7254F7207938ECA51C0A43D66B88B1FFD713DD84248941CD9",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/forkcloser/curl/v8.22.0/curl_8.22.0_windows_arm64.tar.gz",
+      "checksum": "4CEBEC6D937A154AE2DC16815E144831CA8F90B85C5E22BA93C6A128518C11DC",
       "algorithm": "sha256"
     },
     {

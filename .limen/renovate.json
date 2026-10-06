@@ -74,7 +74,7 @@
       ],
       "matchDepNames": [
         "github.com/vbatts/git-validation",
-        "github.com/farcloser/godolint",
+        "github.com/forkcloser/godolint",
         "github.com/forkcloser/dot",
         "golang.org/x/tools",
         "golang.org/x/vuln",
