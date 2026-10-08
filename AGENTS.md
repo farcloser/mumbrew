@@ -29,6 +29,10 @@ chapter; the procedure is limen's `skills/contribute`.
   human's own work, the human is the author. No scratchpads (`AUDIT.md` and its kind):
   they live under `_scratch/` at the repository root, which `.gitignore` ignores, and
   nowhere else in the tree.
+- **The pull request's title is its release note.** A release's notes are the titles of
+  the pull requests it merged, so a title says what changed for a consumer; no
+  `CHANGELOG.md` is kept by hand. One that breaks a consumer carries the `breaking` label
+  (`gh label create breaking` the first time a repository needs it).
 - **One commit per thing.** Different things get different commits; iteration on the
   same thing — a review round, a fix to your own commit — is squashed into the commit it
   amends before the review is requested. Never a stack of fix-ups for one change.
@@ -59,8 +63,9 @@ chapter; the procedure is limen's `skills/contribute`.
 - **A flake is fixed when it is noticed.** A check that fails, then passes on a rerun, gets
   its root cause and its fix at once, in a pull request of its own: by whoever noticed it,
   or by the owning session when it is another repository's. The rerun found the flake; it
-  did not fix it. The one exception is a flake whose cause is known and whose fix was
-  declined, documented as such (windows-11-arm's silent exit 4 or 127): it is rerun, and named.
+  did not fix it. The exceptions are flakes whose cause is known and whose fix was
+  declined, documented as such in the book's known upstream bugs (windows-11-arm's silent
+  exit 4 or 127, an aqua download that stalls with no timeout): each is rerun, and named.
 - **Doctrine can lose the argument, never silently.** A fix that cuts against the book is
   named as such and argued; it is decided, not discovered.
 - **Broken tooling is reported, never worked around in silence.** The rig — limen, the
@@ -77,6 +82,9 @@ chapter; the procedure is limen's `skills/contribute`.
   `just lint` and `just test` green, the commit message written — ready to commit and push
   when the human is back, and say so once. Signing that never worked in the session is
   broken tooling (above).
+- **Read what the work needs, never the whole disk.** A targeted read outside the
+  repositories is fine when the work calls for it; a filesystem-wide walk is not: no
+  `find /`, `find ~`, disk-wide `mdfind`, or recursive grep over `/` or `~`.
 
 ## Communication
 

@@ -1,6 +1,5 @@
-# Seeded once by `limen fix`, then the project's own: limen never updates it.
-# Realign it by hand when limen's canonical moves, and comment every project
-# line so the next alignment keeps it.
+# DO NOT EDIT MANUALLY: content-pinned by limen, reset on drift. A project's
+# own scans go in its `security` recipe in the root .justfile, which this runs.
 #
 # The security lane, apart from ci: a scan's verdict moves with the
 # vulnerability database, not with the tree, so this runs on a schedule as
@@ -51,7 +50,7 @@ jobs:
       - name: Install aqua (pinned, checksum-verified)
         uses: ./.github/actions/setup-aqua
 
-      # aqua's package store, keyed on the exact pins (see ci.yaml).
+      # aqua's package store, keyed on the exact pins (see limen-verify.yaml).
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.AQUA_ROOT_DIR }}/pkgs
@@ -64,7 +63,7 @@ jobs:
         run: aqua install --only-link
 
       # The Go build and module caches: the scan compiles the module graph
-      # once per supported platform, cold without this (see ci.yaml).
+      # once per supported platform, cold without this (see limen-verify.yaml).
       - id: gocache
         run: |
           echo "build=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
