@@ -76,8 +76,12 @@ jobs:
       - name: Converge the limen baseline
         # `aqua exec` resolves the branch's own limen pin, verified with the
         # checksums from the step above. A released limen leaves its own pin
-        # alone, so this cannot ping-pong. Skipped in the limen repository:
-        # there the working tree IS the next baseline.
+        # alone, and on a renovate/ branch (GITHUB_REF_NAME) it leaves
+        # .aqua/aqua.yaml alone too: Renovate renders that file on every run,
+        # so a line added here would be removed, added, removed, the branch
+        # force-pushed each time. What the manifest lacks, fix adds on main.
+        # Skipped in the limen repository: there the working tree IS the next
+        # baseline.
         if: github.repository != 'farcloser/limen'
         run: aqua exec -- limen fix .
 
