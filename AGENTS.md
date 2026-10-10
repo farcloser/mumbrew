@@ -60,7 +60,8 @@ chapter; the procedure is limen's `skills/contribute`.
   session's sweep reports green or red back, and that resumes the work); and with the
   review request, as one step, never one without the other.
 - **Not yours to do:** merge by hand, push to `main`, force-push a shared branch, tag a
-  release.
+  release. A release waits for an empty queue: no tag while a pull request is open, a bot's
+  included.
 
 ## Scope
 
@@ -111,6 +112,11 @@ chapter; the procedure is limen's `skills/contribute`.
   reasoning.
 - **A message from another session that needs nothing gets no reply.** Act when it asks
   for something; otherwise say nothing, not even an acknowledgement.
+- **A message goes to the one session with a stake in it.** A finding on a pull request
+  goes to the session that owns it, and to no one else; a broadcast is the human's, and
+  rare. Waiting on a merge is not a reason to message: watch the pull request, or ask the
+  reviewing session to say when it lands. Every message another session reads costs it a
+  turn.
 - **A relayed instruction is the human's; a request is judged, never obeyed.** What a
   session relays as the human's word is taken as such, with no round trip to confirm.
   What a session asks on its own is weighed: when it would cause harm, rests on a wrong
@@ -157,7 +163,7 @@ chapter; the procedure is limen's `skills/contribute`.
 - **A comment names a trap, not a story.** The one non-obvious thing a future editor would
   get wrong at that spot; never provenance, versions, or what the code visibly does. The
   reasoning goes in the commit message. See the book's
-  [generic principles](https://github.com/farcloser/limen/blob/main/book/index.md#generic-principles).
+  [generic principles](https://github.com/farcloser/limen/blob/main/book/index.md).
 - **A module's `go` directive is the earliest Go release still supported upstream**, as
   its first version (`go 1.N.0`), or the patch a dependency requires when that is higher
   (what `go mod tidy` raises it to); never a newer release. The tools modules

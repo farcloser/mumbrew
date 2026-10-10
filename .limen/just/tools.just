@@ -10,6 +10,15 @@ set quiet
 # Shared private _banner recipe and go_tool_build (see lib.just).
 import 'lib.just'
 
+# aqua's GitHub API calls (a package's tag list, its release assets) are
+# limited per address when unauthenticated, and one checksum update makes
+# one per package: a laptop pinning one tool across nine repositories hit the
+# 403 on the second (the download then 404s on an unset version). The laptop's
+# own gh login authenticates them when it has one and nothing set the
+# variable; setup-aqua sets it in CI. Prefixed on the API-calling aqua
+# commands only, never exported to a recipe's other children.
+aqua_api := 'AQUA_GITHUB_TOKEN="${AQUA_GITHUB_TOKEN:-$(gh auth token 2>/dev/null || true)}" aqua'
+
 # --- Project tooling (see book/tooling.md). Every recipe takes the tool as it
 #     is pinned: an aqua slug exactly as in .aqua/aqua.yaml (goreleaser/goreleaser),
 #     or a Go package path exactly as in tools/go.mod
@@ -41,7 +50,7 @@ project_aqua := '''
         copy=$(mktemp .aqua/aqua.yaml.XXXXXX)
         scratch=$(mktemp -d)
         sed 's|^\([[:space:]]*\)- import: \(\.\./\.limen/aqua\.yaml\)[[:space:]]*$|\1# limen-import: \2|' .aqua/aqua.yaml > "$copy"
-        (cd "$scratch" && env -u AQUA_GLOBAL_CONFIG aqua -c "$OLDPWD/$copy" "$@") || rc=$?
+        (cd "$scratch" && env -u AQUA_GLOBAL_CONFIG AQUA_GITHUB_TOKEN="${AQUA_GITHUB_TOKEN:-$(gh auth token 2>/dev/null || true)}" aqua -c "$OLDPWD/$copy" "$@") || rc=$?
         rmdir "$scratch"
         if [ "$rc" -eq 0 ]; then
             sed 's|^\([[:space:]]*\)# limen-import: |\1- import: |' "$copy" > "$copy.restored"
@@ -99,7 +108,7 @@ add pkg version="": (_banner "tools" "add")
         exit 1
     fi
     mv "$tmp" .aqua/aqua.yaml
-    aqua -c .aqua/aqua.yaml update-checksum --prune      # record its checksum (and drop stale ones)
+    {{ aqua_api }} -c .aqua/aqua.yaml update-checksum --prune      # record its checksum (and drop stale ones)
     aqua -c .aqua/aqua.yaml install                      # REAL install: a bad pin fails here, not at first use
 
 # Set an existing tool to an exact version, e.g. `just do tools set goreleaser/goreleaser v2.0.0`.
@@ -139,7 +148,7 @@ set pkg version: (_banner "tools" "set")
     trap 'rm -f "$tmp"' EXIT
     sed -E "s#(^[[:space:]]*-[[:space:]]*name:[[:space:]]*${esc})@[^[:space:]]*#\1@{{ version }}#" .aqua/aqua.yaml > "$tmp"
     mv "$tmp" .aqua/aqua.yaml
-    aqua -c .aqua/aqua.yaml update-checksum --prune      # new checksum in, replaced version's out
+    {{ aqua_api }} -c .aqua/aqua.yaml update-checksum --prune      # new checksum in, replaced version's out
     aqua -c .aqua/aqua.yaml install                      # REAL install: a bad pin fails here, not at first use
 
 # Takes the COMMAND name (`just`, `limen`, `deadcode`), not the package: `aqua
@@ -188,7 +197,7 @@ update command="": (_banner "tools" "update")
     {{ project_aqua }}
     if [ -z '{{ command }}' ]; then
         project_aqua update               # every project pin and the registries, to the latest
-        aqua -c .aqua/aqua.yaml update-checksum --prune      # new checksums in, replaced versions' out
+        {{ aqua_api }} -c .aqua/aqua.yaml update-checksum --prune      # new checksums in, replaced versions' out
         aqua -c .aqua/aqua.yaml install                      # REAL install: a bad pin fails here, not at first use
         if [ ${#pkgs[@]} -gt 0 ]; then
             go -C tools get -tool "${pkgs[@]/%/@latest}"   # one solve for all of them
@@ -217,7 +226,7 @@ update command="": (_banner "tools" "update")
         echo "{{ command }} is not pinned in .aqua/aqua.yaml — a canonical tool moves with limen; pin your own version with 'just do tools add <package>'." >&2
         exit 1
     fi
-    aqua -c .aqua/aqua.yaml update-checksum --prune      # new checksum in, replaced version's out
+    {{ aqua_api }} -c .aqua/aqua.yaml update-checksum --prune      # new checksum in, replaced version's out
     aqua -c .aqua/aqua.yaml install                      # REAL install: a bad pin fails here, not at first use
 
 # Remove a tool entirely, e.g. `just do tools remove junegunn/fzf`.
@@ -275,4 +284,4 @@ remove pkg: (_banner "tools" "remove")
     # No `aqua remove`: it uninstalls from aqua's root, which every checkout on
     # the machine shares, and another may still pin the same version (the
     # canonical set imports it, for one).
-    aqua -c .aqua/aqua.yaml update-checksum --prune      # drop the now-unused checksum
+    {{ aqua_api }} -c .aqua/aqua.yaml update-checksum --prune      # drop the now-unused checksum

@@ -79,6 +79,19 @@ release *args:
     }
     # CI lane: pushing the v* tag is what starts the release workflow — the one
     # publisher in this lane.
+    # No tag while a pull request is open, a bot's included: what is open is
+    # part of the release or the next one's first commit, and both say wait
+    # (book/recipes.md). gh resolves the repository from origin, the remote
+    # the tag goes to.
+    require_empty_queue() {
+        local open
+        open=$(gh pr list --state open --json number --jq 'length' -R "$(git remote get-url origin)")
+        if [ "$open" != 0 ]; then
+            echo "$open pull request(s) are open — a release waits for an empty queue (merge or close them first):" >&2
+            gh pr list --state open -R "$(git remote get-url origin)" >&2
+            exit 1
+        fi
+    }
     tag_and_push() {
         ensure_signed_tag "$1"
         git push origin HEAD
@@ -137,6 +150,7 @@ release *args:
             fi
             require_version_tag "$tag"
             require_clean
+            require_empty_queue
             if [ -z "${GITHUB_TOKEN:-}" ]; then
                 echo "GITHUB_TOKEN is not set — goreleaser needs it to publish the GitHub release." >&2
                 exit 1
@@ -226,6 +240,7 @@ release *args:
             fi
             require_version_tag "$tag"
             require_clean
+            require_empty_queue
             tag_and_push "$tag"
             if has_goreleaser; then
                 echo "tag $tag pushed — the release workflow builds, signs, and publishes from here."
