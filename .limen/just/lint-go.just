@@ -160,7 +160,12 @@ nilaway: (_banner "lint go" "nilaway") (_go-tool "nilaway" "go.uber.org/nilaway/
 # their location under GOROOT, reading its default from its own build. _go-tool
 # compiles it with the pinned toolchain, so the two agree by construction; the
 # explicit value keeps that true even when a project overrides GOROOT.
-licenses: (_banner "lint go" "licenses") (_go-tool "go-licenses" "github.com/google/go-licenses/v2") (_per-platform 'GOROOT="$(go env GOROOT)" build/tools/go-licenses check --include_tests $(${LIMEN_LINT_GO_BIN:-limen-lint-go} flags licenses) ./...')
+#
+# The module's own path is ignored by the lane: the lane judges the dependency
+# graph, the repository's own LICENSE is the `license` rule's, and go-licenses
+# classifies a license by its text, so the Closed-source notice limen writes
+# failed every package of such a module.
+licenses: (_banner "lint go" "licenses") (_go-tool "go-licenses" "github.com/google/go-licenses/v2") (_per-platform 'GOROOT="$(go env GOROOT)" build/tools/go-licenses check --include_tests --ignore "$(go list -m)" $(${LIMEN_LINT_GO_BIN:-limen-lint-go} flags licenses) ./...')
 
 # Unreachable functions, by whole-program call-graph analysis (deeper than the
 # per-package `unused` linter in golangci). -test keeps library-only repos

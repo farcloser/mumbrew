@@ -301,14 +301,16 @@ packages:
   # git-bash.
   # Linked straight to usr/bin, never through bin/bash.exe, whose PATH
   # prepending would let Git's own curl shadow the pin. The runtime is x86_64
-  # even in the arm64 tarball. The release tag is vX.Y.Z.windows.N, the asset
-  # name carries X.Y.Z only. Upstream lists each asset's SHA-256 in the release
-  # notes: check the recorded checksums against that table at every bump.
+  # even in the arm64 tarball. The release tag is vX.Y.Z.windows.N; the asset
+  # name carries X.Y.Z for the first build and X.Y.Z.N for a rebuild
+  # (v2.56.0.windows.2 ships Git-2.56.0.2-64-bit.tar.bz2). Upstream lists each
+  # asset's SHA-256 in the release notes: check the recorded checksums against
+  # that table at every bump.
   - type: github_release
     repo_owner: git-for-windows
     repo_name: git
     description: Git for Windows, for its MSYS2 GNU coreutils
-    asset: Git-{{ regexReplaceAll "\\.windows\\.[0-9]+$" (trimV .Version) "" }}-{{.Arch}}.tar.bz2
+    asset: Git-{{ regexReplaceAll "\\.windows\\.([0-9]+)$" (regexReplaceAll "\\.windows\\.1$" (trimV .Version) "") ".${1}" }}-{{.Arch}}.tar.bz2
     format: tar.bz2
     replacements:
       amd64: 64-bit
