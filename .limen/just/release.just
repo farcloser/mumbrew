@@ -8,7 +8,8 @@
 # import's settings would apply to the whole importing module.
 
 # Lanes: `vX.Y.Z` cuts the signed tag and pushes (CI builds, signs keyless,
-# publishes); `--local <key> vX.Y.Z` is the fully local, key-based lane and the
+# publishes; without a .release-go.yaml, the recipe creates the release page
+# itself); `--local <key> vX.Y.Z` is the fully local, key-based lane and the
 # sole publisher; `--local --dry-run` is an unsigned snapshot; `--ci` is the
 # workflow half. usage() below and book/recipes.md have the details.
 #
@@ -29,7 +30,7 @@ release *args:
         fi
     }
     usage() {
-        echo "usage: just do release <tag>                                               # signed tag + push; CI builds, signs (keyless), publishes" >&2
+        echo "usage: just do release <tag>                                               # signed tag + push; CI builds, signs (keyless), publishes (no .release-go.yaml: the release page, with notes)" >&2
         echo "       just do release --local <cosign-key> <tag> [--cosign-password-stdin] # fully local, key-based cosign" >&2
         echo "       just do release --local --dry-run                                   # local unsigned snapshot into build/release/" >&2
         echo "       just do release --ci                                                # workflow half of the default lane (GitHub Actions only)" >&2
@@ -229,7 +230,28 @@ release *args:
             if has_goreleaser; then
                 echo "tag $tag pushed — the release workflow builds, signs, and publishes from here."
             else
-                echo "tag $tag pushed — no .release-go.yaml, so the signed tag is the release: nothing to build or publish."
+                # No artifacts to build, but every tag has a release page,
+                # with GitHub's notes from the merged pull requests (grouped
+                # by .github/release.yml): the laptop makes it, through the
+                # pinned gh and the human's own auth, on the repository the
+                # tag went to (gh would otherwise pick between origin and
+                # upstream by its own rules). --verify-tag refuses a tag that
+                # has not reached origin. GitHub starts the notes at the last
+                # PUBLISHED release, so a repository whose earlier tags had no
+                # page gets every pull request since inception unless the
+                # previous tag is named. A retry finds the page and leaves it.
+                repo="$(git remote get-url origin)"
+                if gh release view "$tag" -R "$repo" >/dev/null 2>&1; then
+                    echo "tag $tag pushed — its release page already exists (a retry): nothing to build or publish."
+                else
+                    opts=(--verify-tag --generate-notes)
+                    if previous="$(git describe --tags --match "v*" --abbrev=0 "$tag^" 2>/dev/null)"; then
+                        opts+=(--notes-start-tag "$previous")
+                    fi
+                    case "$tag" in *-*) opts+=(--prerelease) ;; esac
+                    gh release create "$tag" -R "$repo" "${opts[@]}"
+                    echo "tag $tag pushed and its release page created — no .release-go.yaml, so nothing else to build or publish."
+                fi
             fi
             ;;
     esac

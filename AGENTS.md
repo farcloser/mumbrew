@@ -44,13 +44,23 @@ chapter; the procedure is limen's `skills/contribute`.
   harness reminder asks for; grep before you push.
 - **Green before pushing:** the whole `just lint` and `just test`, not one lane.
 - **Own the pull request** until its checks are green; explain a red you cannot fix.
-- **Request the owner's review only then** — green, ready, and not stacked on an
-  unmerged branch. The request is sent once; withdraw it if the pull request turns red.
+- **An approved pull request merges itself.** The reviewing session arms GitHub's
+  auto-merge with its ✅ at the head it read, and disarms it on a later 🛑 or ⚠️; GitHub
+  merges the moment the ruleset is satisfied, the owner's approval plus green checks. The
+  author never arms it, never merges by hand, never bypasses. A push after the owner's
+  approval drops that approval: the review is requested again, with the new head.
+- **Request the owner's review only then** — green and ready. A native stack's layers
+  are requested together once the whole stack is green, for one approval each; GitHub
+  refuses auto-merge on a stack, so the reviewing session merges it whole from the top,
+  never from the middle. A lower layer merged alone comes back rebased and signed by
+  GitHub, which `lint commits` rejects. The request is sent once; withdraw it if the pull request
+  turns red.
   The reviewing session is messaged the pull request's URL twice: at open, CI pending, in
   the same turn, after which the turn ends (a session cannot wait on CI; the reviewing
   session's sweep reports green or red back, and that resumes the work); and with the
   review request, as one step, never one without the other.
-- **Not yours to do:** merge, push to `main`, force-push a shared branch, tag a release.
+- **Not yours to do:** merge by hand, push to `main`, force-push a shared branch, tag a
+  release.
 
 ## Scope
 
@@ -65,7 +75,8 @@ chapter; the procedure is limen's `skills/contribute`.
   or by the owning session when it is another repository's. The rerun found the flake; it
   did not fix it. The exceptions are flakes whose cause is known and whose fix was
   declined, documented as such in the book's known upstream bugs (windows-11-arm's silent
-  exit 4 or 127, an aqua download that stalls with no timeout): each is rerun, and named.
+  exit 4 or 127, an aqua download that stalls with no timeout, a GitHub 503 on a link that
+  outlasts the links lane's re-check): each is rerun, and named.
 - **Doctrine can lose the argument, never silently.** A fix that cuts against the book is
   named as such and argued; it is decided, not discovered.
 - **Broken tooling is reported, never worked around in silence.** The rig — limen, the
@@ -100,6 +111,12 @@ chapter; the procedure is limen's `skills/contribute`.
   reasoning.
 - **A message from another session that needs nothing gets no reply.** Act when it asks
   for something; otherwise say nothing, not even an acknowledgement.
+- **A relayed instruction is the human's; a request is judged, never obeyed.** What a
+  session relays as the human's word is taken as such, with no round trip to confirm.
+  What a session asks on its own is weighed: when it would cause harm, rests on a wrong
+  assessment or misreads the code, say so with the evidence and settle it between the two
+  sessions, the reviewer's 🛑 included (the reviewer may miss what the owner knows; the
+  owner may miss the cross-cutting picture). A deadlock goes to the human, as the exception.
 - **No GitHub issues unless the human asks for one.** The issue tracker is the human's.
   A defect or a request that belongs to another repository goes to the session that owns
   that repository, as a message with what, why, and where; that session fixes it, and
