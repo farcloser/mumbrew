@@ -11,10 +11,10 @@ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/fatih/color v1.15.0/go.mod h1:0h5ZqXfHYED7Bhv2ZJamyIOUej9KtShiJESRwBDUSsw=
 github.com/fatih/color v1.18.0 h1:S8gINlzdQ840/4pfAwic/ZE0djQEH3wM94VfqLTZcOM=
 github.com/fatih/color v1.18.0/go.mod h1:4FelSpRwEGDpQ12mAdzqdOukCy4u8WUtOY6lkT/6HfU=
-github.com/forkcloser/dot v1.2.0 h1:qSki9biwmje2DK3r23DVrVbBXkZuRqcPsNJNSG5V8vE=
-github.com/forkcloser/dot v1.2.0/go.mod h1:QVY3QZtai+lTojV3D9bVRpLfHwtUju7UxBTerDv5XvQ=
-github.com/forkcloser/go-graphviz v0.5.0 h1:gJeM9OmNFkTIRkZ3u6X6+XHRM9tFRY12Ic/E6LtfkLg=
-github.com/forkcloser/go-graphviz v0.5.0/go.mod h1:EbSWnUlAz5sNUrAeWXI45Fiy074kdsvwXuVuD8nO5Eo=
+github.com/forkcloser/dot v1.2.1 h1:bxGOMJBSI76kHyxzj7LmFb8O9AMLpDwVKE9JeyUsDvE=
+github.com/forkcloser/dot v1.2.1/go.mod h1:xUgYLXN4L59fE+WzPORysuUZ+Fveqf3eysgp0VCrSFY=
+github.com/forkcloser/go-graphviz v0.5.1 h1:F6w6DEOZ1W7c1tyHSbe+T9Br5mpZWjuJ6BzSQu8EcoY=
+github.com/forkcloser/go-graphviz v0.5.1/go.mod h1:EbSWnUlAz5sNUrAeWXI45Fiy074kdsvwXuVuD8nO5Eo=
 github.com/forkcloser/godolint v0.2.0 h1:er1xt/Lkt+wKbGdHUkmdrBzIS18JP/GKyTiI5AnvLdg=
 github.com/forkcloser/godolint v0.2.0/go.mod h1:FbOeFurgitrtphsVBS/m9+XeB7ZEqlxw7UR25uFVNs8=
 github.com/go-quicktest/qt v1.102.0 h1:HSQxCeh5YZH3EL3W39ixjtyaEhcWSXQHtHnMBzSs474=
