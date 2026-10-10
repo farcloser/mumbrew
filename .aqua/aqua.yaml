@@ -24,4 +24,5 @@ packages:
   # Every other tool limen requires comes from the import, at the versions
   # this limen pins: a limen bump changes that file, never this list
   # (book/tooling.md).
+  - name: golang/go@go1.27.2
   - import: ../.limen/aqua.yaml
