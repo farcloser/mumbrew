@@ -61,3 +61,6 @@ _*
 
 # Required by limen (book/mandatory-files.md, ".gitignore").
 .claude
+
+# Required by limen (book/mandatory-files.md, ".gitignore").
+/.build
