@@ -8,8 +8,8 @@ github.com/containerd/typeurl/v2 v2.3.0 h1:HZHPhRWo5XMy3QGQoPrUzbW/2ckwjfweHmOwl
 github.com/containerd/typeurl/v2 v2.3.0/go.mod h1:Qk+PAdUYArVj41TnGi6rJ+48RF0PkcTc4i/taoBcK0w=
 github.com/forkcloser/dot v1.3.1 h1:jhKEBkdZ8PJYgyohT74+I0zYr0NRXwdTWAsZfAJFaBU=
 github.com/forkcloser/dot v1.3.1/go.mod h1:pM3Q/7e6Ac/vY+7J21Q7QoL69wYSni71xt5SfUkR8Ck=
-github.com/forkcloser/git-validation v0.1.0 h1:VdrgzYWdEsrjqPUsRMXHQcNlD3MDjY0CtQFOd9PiGZ8=
-github.com/forkcloser/git-validation v0.1.0/go.mod h1:FbI4riOH3uiJ71I4ulI1E7ApIbu6JoFeQpcJ0eKQgy0=
+github.com/forkcloser/git-validation v0.1.1 h1:A1FkfOHKgkqCC21/DSTjYlY7IlvbRtnvFAZDO2bQMbc=
+github.com/forkcloser/git-validation v0.1.1/go.mod h1:zbgYV4hwcvnhWsO/G7rfVEJDTOKmj71FZcyn/f9FP08=
 github.com/forkcloser/go-graphviz v0.5.2 h1:mtZGeDipgCb+UvnkKasn5NGzRZc9tDQBpayMbBkNqkI=
 github.com/forkcloser/go-graphviz v0.5.2/go.mod h1:LPwbeLn2JeZaoM82ooQOdhghZWX7rfKGo1694ipcs00=
 github.com/forkcloser/godolint v0.5.1 h1:hLfaabqsdaWFruEqQijUd4hwI+uNISL24LKOrlIolk4=
