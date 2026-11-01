@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   scan:
-    uses: farcloser/limen/.github/workflows/limen-security.yaml@e51e59f23fe4da3fffd2949775b9cc2db5d3ced4 # v0.19.0
+    uses: farcloser/limen/.github/workflows/limen-security.yaml@71145be9e7b59068f59e25e1c02ed44677038590 # v0.20.0
     permissions:
       contents: read
 
