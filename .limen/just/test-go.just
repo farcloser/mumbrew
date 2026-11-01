@@ -38,10 +38,16 @@ unit: (_banner "test go" "unit")
 # windows/arm64 among others. Ask the toolchain rather than keep a platform
 # list: a probe build of `unsafe` answers in milliseconds. Only the exact
 # "-race is not supported" refusal skips — loudly, and passes, since the other
-# legs run the detector natively; any other probe failure is real.
+# legs run the detector natively; any other probe failure is real. No go.mod
+# at all: says so and passes, like fuzz, since CI runs this in every
+# repository.
 race: (_banner "test go" "race")
     #!/usr/bin/env bash
     set -euo pipefail
+    if [ ! -f go.mod ]; then
+        echo "no go.mod — not a Go module, nothing to run under the detector (skipped, not failed)."
+        exit 0
+    fi
     export CGO_ENABLED=1
     if ! probe="$(go build -race -o /dev/null unsafe 2>&1)"; then
         if printf '%s\n' "$probe" | grep -q -- '-race is not supported'; then
