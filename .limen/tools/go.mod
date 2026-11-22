@@ -16,10 +16,11 @@ require (
 	github.com/alecthomas/kong v1.16.1 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.10.3 // indirect
 	github.com/containerd/typeurl/v2 v2.3.0 // indirect
-	github.com/forkcloser/dot v1.3.1 // indirect
+	github.com/forkcloser/dot v1.4.0 // indirect
 	github.com/forkcloser/git-validation v0.1.1 // indirect
-	github.com/forkcloser/go-graphviz v0.5.2 // indirect
+	github.com/forkcloser/go-graphviz v0.6.0 // indirect
 	github.com/forkcloser/godolint v0.5.1 // indirect
+	github.com/forkcloser/xos v0.1.2 // indirect
 	github.com/forkcloser/yamlfmt v0.2.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/lmittmann/tint v1.2.1 // indirect
@@ -31,9 +32,9 @@ require (
 	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06 // indirect
 	github.com/tetratelabs/wazero v1.12.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/image v0.47.0 // indirect
-	golang.org/x/sys v0.49.0 // indirect
-	golang.org/x/text v0.43.0 // indirect
+	golang.org/x/image v0.48.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
+	golang.org/x/text v0.44.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	mvdan.cc/sh/v3 v3.14.1 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
